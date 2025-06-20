@@ -88,6 +88,7 @@ public class LighthouseComponentBase
     /// will be unchanged.
     /// </para>
     /// </remarks>
+    //TODO
     public Task SetParametersAsync(ParameterView parameters)
     {
         parameters.SetParameterProperties(this);
@@ -106,6 +107,7 @@ public class LighthouseComponentBase
     /// Notifies the component that its state has changed. When applicable, this will
     /// cause the component to be re-rendered.
     /// </summary>
+    //TODO
     protected void StateHasChanged()
     {
         QueueRenderingIfNecessary(renderId);
@@ -116,6 +118,7 @@ public class LighthouseComponentBase
     /// synchronization context.
     /// </summary>
     /// <param name="workItem">The work item to execute.</param>
+    //TODO
     protected Task InvokeAsync(Action workItem)
     {
         return renderHandle.Dispatcher.InvokeAsync(workItem);
@@ -126,6 +129,7 @@ public class LighthouseComponentBase
     /// synchronization context.
     /// </summary>
     /// <param name="workItem">The work item to execute.</param>
+    //TODO
     protected Task InvokeAsync(Func<Task> workItem)
     {
         return renderHandle.Dispatcher.InvokeAsync(workItem);
@@ -141,6 +145,7 @@ public class LighthouseComponentBase
     /// </summary>
     /// <param name="exception">The <see cref="Exception"/> that will be dispatched to the renderer.</param>
     /// <returns>A <see cref="Task"/> that will be completed when the exception has finished dispatching.</returns>
+    //TODO
     protected Task DispatchExceptionAsync(Exception exception)
     {
         return renderHandle.DispatchExceptionAsync(exception);
@@ -259,7 +264,8 @@ public class LighthouseComponentBase
     /// Returns a flag to indicate when state has changed should be called.
     /// </summary>
     /// <returns></returns>
-    protected virtual bool EnforceStateHasChanged() {
+    protected virtual bool EnforceStateHasChanged()
+    {
         return true;
     }
 
@@ -274,20 +280,20 @@ public class LighthouseComponentBase
         });
     }
 
-    private async Task CallInitAndSetParametersAsync(bool parameters)
+    private async Task CallInitAndSetParametersAsync(bool callStateHasChanged)
     {
         var onInitTask = CallOnInitializedAsync();
         if (!ShouldAwaitTask(onInitTask))
         {
-            await CallOnParametersSetAsync(parameters);
+            await CallOnParametersSetAsync(callStateHasChanged);
             return;
         }
 
-        if (parameters)
+        if (callStateHasChanged)
             StateHasChanged();
 
         await WaitForAsyncTaskCompletion(onInitTask);
-        await CallOnParametersSetAsync(parameters);
+        await CallOnParametersSetAsync(callStateHasChanged);
     }
 
     [DebuggerDisableUserUnhandledExceptions]
@@ -429,11 +435,13 @@ public class LighthouseComponentBase
         InvokeAsync(() => QueueRenderingIfNecessary(renderId));
     }
 
+    //TODO
     void IRefreshable.Dispose(AbstractSignal signal)
     {
         accessTracker.Untrack(signal);
     }
 
+    //TODO
     Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg)
     {
         var eventTask = callback.InvokeAsync(arg);
@@ -441,6 +449,7 @@ public class LighthouseComponentBase
         return CallStateHasChangedAfterAsyncTask(eventTask, callStateHasChanged);
     }
 
+    //TODO
     Task IHandleAfterRender.OnAfterRenderAsync()
     {
         var firstRender = !hasCalledOnAfterRender;

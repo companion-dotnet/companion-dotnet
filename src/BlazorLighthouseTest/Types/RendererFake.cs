@@ -11,6 +11,9 @@ internal class RendererFake(
     ILoggerFactory loggerFactory) 
         : Renderer(serviceProvider, loggerFactory)
 {
+    public int GetComponentRenderModeCallCount { get; private set; }
+
+    protected override RendererInfo RendererInfo { get; }  = new(nameof(RendererFake), true);
     public override Dispatcher Dispatcher { get; } = Dispatcher.CreateDefault();
 
     public void Attach(IComponent component)
@@ -18,6 +21,15 @@ internal class RendererFake(
         AssignRootComponentId(component);
     }
 
+    public RendererInfo GetRendererInfo()
+    {
+        return RendererInfo;
+    }
+
+    public ResourceAssetCollection GetAssets()
+    {
+        return Assets;
+    }
     protected override void HandleException(Exception exception)
     {
         throw exception;
@@ -28,11 +40,22 @@ internal class RendererFake(
         return Task.CompletedTask;
     }
 
+    protected override IComponentRenderMode? GetComponentRenderMode(IComponent component)
+    {
+        GetComponentRenderModeCallCount++;
+        return new ComponentRenderMode();
+    }
+
     public static RendererFake Create()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var loggerFactory = LoggerFactory.Create(builder => { });
         return new(serviceProvider.Object, loggerFactory);
     }
+
+    public class ComponentRenderMode : IComponentRenderMode
+    {
+
+    }
 }
-#pragma warning restore BL0006
+
