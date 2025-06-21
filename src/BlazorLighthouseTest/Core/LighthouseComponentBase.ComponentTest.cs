@@ -104,15 +104,37 @@ public partial class LighthouseComponentBaseTest
     public async Task TestSetParametersAsync()
     {
         // arrange
-        var enforceStateHasChangedSynchronizer = new TestTaskSynchronizer();
-        var onInitializedAsyncSynchronizer = new TestTaskSynchronizer();
-        var onParamtersSetAsyncSynchronizer = new TestTaskSynchronizer();
+        var enforceStateHasChangedActionCallCount = 0;
+        var onInitializedAyncActionCallCount = 0;
+        var onParametersSetAsyncActionCallCount = 0;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
         enforceStateHasChangedAction.Setup(obj => obj.Invoke())
-            .Callback(() => enforceStateHasChangedSynchronizer.ContinueTest().Wait());
+            .Callback(() =>
+            {
+                Assert.Equal("Value1", component.Property1);
+                Assert.Equal("Value2", component.Property2);
+                enforceStateHasChangedActionCallCount++;
+            })
+            .Returns(true);
         onInitializedAyncAction.Setup(obj => obj.Invoke())
-            .Returns(onInitializedAsyncSynchronizer.ContinueTest);
+            .Callback(() =>
+            {
+                onInitializedAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onInitializedAyncActionCallCount++;
+            })
+            .Returns(Task.CompletedTask);
         onParametersSetAsyncAction.Setup(obj => obj.Invoke())
-            .Returns(onParamtersSetAsyncSynchronizer.ContinueTest);
+            .Callback(() =>
+            {
+                onParametersSetAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onParametersSetAsyncActionCallCount++;
+            })
+            .Returns(Task.CompletedTask);
 
         var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
         {
@@ -120,56 +142,34 @@ public partial class LighthouseComponentBaseTest
             { nameof(TestComponent.Property2), "Value2" }
         });
 
-        // act & assert
-        var task = component.ExecuteInvokeAsync(
-            async () =>
-            {
-                await Task.Yield();
-                await component.SetParametersAsync(parameters);
-            });
+        // act
+        await component.ExecuteInvokeAsync(
+            async () => await component.SetParametersAsync(parameters));
 
-        await enforceStateHasChangedSynchronizer.BlockTest();
-
-        Assert.Equal("Value1", component.Property1);
-        Assert.Equal("Value2", component.Property2);
-
-        enforceStateHasChangedSynchronizer.ContinueCoroutine();
-        await onInitializedAsyncSynchronizer.BlockTest();
-
+        // assert
+        enforceStateHasChangedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
         onInitializedAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
         onInitializedAyncAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
-
-        buildRenderTreeAction.Verify(
-            obj => obj.Invoke(),
-            Times.Never);
-
-        onInitializedAsyncSynchronizer.ContinueCoroutine();
-        await onParamtersSetAsyncSynchronizer.BlockTest();
-
         onParametersSetAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
         onParametersSetAsyncAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
-        
-        //TODO
-        buildRenderTreeAction.Verify(
-            obj => obj.Invoke(),
-            Times.Once);
-
-        onParamtersSetAsyncSynchronizer.ContinueCoroutine();
-
-        Assert.Equal("Value1", component.Property1);
-        Assert.Equal("Value2", component.Property2);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
+
+        Assert.Equal(1, enforceStateHasChangedActionCallCount);
+        Assert.Equal(1, onInitializedAyncActionCallCount);
+        Assert.Equal(1, onParametersSetAsyncActionCallCount);
     }   
 
     //[Fact]
