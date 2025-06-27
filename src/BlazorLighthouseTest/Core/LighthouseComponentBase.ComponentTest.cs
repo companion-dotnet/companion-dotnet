@@ -91,17 +91,21 @@ public partial class LighthouseComponentBaseTest
     }
     
     [Fact]
-    public void TestEnforceStateHasChanged()
+    public void TestDisableStateHasChanged()
     {
         // act
-        var result = component.ExecuteEnforceStateHasChanged();
+        var result = component.ExecuteDisableStateHasChanged();
 
         // assert
-        Assert.True(result);
+        Assert.False(result);
     }
 
-    [Fact]
-    public async Task TestSetParametersAsync()
+    [Theory]
+    [InlineData(1, true)]
+    [InlineData(1, false)]
+    public async Task TestSetParametersAsync(
+        int excpectedbuildRenderTreeCallCount,
+        bool enforceStateHasChanged)
     {
         // arrange
         var enforceStateHasChangedActionCallCount = 0;
@@ -109,14 +113,14 @@ public partial class LighthouseComponentBaseTest
         var onParametersSetAsyncActionCallCount = 0;
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
-        enforceStateHasChangedAction.Setup(obj => obj.Invoke())
+        disableStateHasChangedAction.Setup(obj => obj.Invoke())
             .Callback(() =>
             {
                 Assert.Equal("Value1", component.Property1);
                 Assert.Equal("Value2", component.Property2);
                 enforceStateHasChangedActionCallCount++;
             })
-            .Returns(true);
+            .Returns(enforceStateHasChanged);
         onInitializedAyncAction.Setup(obj => obj.Invoke())
             .Callback(() =>
             {
@@ -147,7 +151,175 @@ public partial class LighthouseComponentBaseTest
             async () => await component.SetParametersAsync(parameters));
 
         // assert
-        enforceStateHasChangedAction.Verify(
+        disableStateHasChangedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAsyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Exactly(excpectedbuildRenderTreeCallCount));
+
+        Assert.Equal(1, enforceStateHasChangedActionCallCount);
+        Assert.Equal(1, onInitializedAyncActionCallCount);
+        Assert.Equal(1, onParametersSetAsyncActionCallCount);
+    }   
+
+    [Fact]
+    public async Task TestSetParametersAsync_LongSetParametersTask()
+    {
+        // arrange
+        var enforceStateHasChangedActionCallCount = 0;
+        var onInitializedAyncActionCallCount = 0;
+        var onParametersSetAsyncActionCallCount = 0;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        disableStateHasChangedAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                Assert.Equal("Value1", component.Property1);
+                Assert.Equal("Value2", component.Property2);
+                enforceStateHasChangedActionCallCount++;
+            })
+            .Returns(false);
+        onInitializedAyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onInitializedAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onInitializedAyncActionCallCount++;
+            })
+            .Returns(Task.CompletedTask);
+
+        var task = new TaskCompletionSource();
+        onParametersSetAsyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onParametersSetAsyncActionCallCount++;
+            })
+            .Returns(task.Task);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAsyncAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+
+                task.SetResult();
+                task = new TaskCompletionSource();
+            });
+
+        var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
+        {
+            { nameof(TestComponent.Property1), "Value1" },
+            { nameof(TestComponent.Property2), "Value2" }
+        });
+
+        // act
+        await component.ExecuteInvokeAsync(
+            async () => await component.SetParametersAsync(parameters));
+
+        // assert
+        disableStateHasChangedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Exactly(2));
+        onInitializedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAsyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Exactly(2));
+
+        Assert.Equal(2, enforceStateHasChangedActionCallCount);
+        Assert.Equal(1, onInitializedAyncActionCallCount);
+        Assert.Equal(1, onParametersSetAsyncActionCallCount);
+    }   
+
+    [Fact]
+    public async Task TestSetParametersAsync_LongSetParametersTaskFailing()
+    {
+        // arrange
+        var enforceStateHasChangedActionCallCount = 0;
+        var onInitializedAyncActionCallCount = 0;
+        var onParametersSetAsyncActionCallCount = 0;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        disableStateHasChangedAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                Assert.Equal("Value1", component.Property1);
+                Assert.Equal("Value2", component.Property2);
+                enforceStateHasChangedActionCallCount++;
+            })
+            .Returns(true);
+        onInitializedAyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onInitializedAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onInitializedAyncActionCallCount++;
+            })
+            .Returns(Task.CompletedTask);
+
+        var task = new TaskCompletionSource();
+        onParametersSetAsyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onParametersSetAsyncActionCallCount++;
+            })
+            .Returns(task.Task);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAsyncAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+
+                task.SetCanceled();
+                task = new TaskCompletionSource();
+            });
+
+        var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
+        {
+            { nameof(TestComponent.Property1), "Value1" },
+            { nameof(TestComponent.Property2), "Value2" }
+        });
+
+        // act
+        await component.ExecuteInvokeAsync(
+            async () => await component.SetParametersAsync(parameters));
+
+        // assert
+        disableStateHasChangedAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
         onInitializedAction.Verify(
@@ -171,6 +343,261 @@ public partial class LighthouseComponentBaseTest
         Assert.Equal(1, onInitializedAyncActionCallCount);
         Assert.Equal(1, onParametersSetAsyncActionCallCount);
     }   
+
+    [Fact]
+    public async Task TestSetParametersAsync_Exception()
+    {
+        // arrange
+        var enforceStateHasChangedActionCallCount = 0;
+        var onInitializedAyncActionCallCount = 0;
+        var onParametersSetAsyncActionCallCount = 0;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        disableStateHasChangedAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                Assert.Equal("Value1", component.Property1);
+                Assert.Equal("Value2", component.Property2);
+                enforceStateHasChangedActionCallCount++;
+            })
+            .Returns(true);
+        onInitializedAyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onInitializedAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onInitializedAyncActionCallCount++;
+            })
+            .Returns(Task.CompletedTask);
+
+        var task = new TaskCompletionSource();
+        onParametersSetAsyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onParametersSetAsyncActionCallCount++;
+            })
+            .Returns(task.Task);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAsyncAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+
+                task.SetException(new InvalidOperationException());
+                task = new TaskCompletionSource();
+            });
+
+        var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
+        {
+            { nameof(TestComponent.Property1), "Value1" },
+            { nameof(TestComponent.Property2), "Value2" }
+        });
+
+        // act
+        await component.ExecuteInvokeAsync(
+            async () => await Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await component.SetParametersAsync(parameters)));
+
+        // assert
+        disableStateHasChangedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAsyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+
+        Assert.Equal(1, enforceStateHasChangedActionCallCount);
+        Assert.Equal(1, onInitializedAyncActionCallCount);
+        Assert.Equal(1, onParametersSetAsyncActionCallCount);
+    }   
+
+    [Fact]
+    public async Task TestSetParametersAsync_NoSecondStateHasChanged()
+    {
+        // arrange
+        var enforceStateHasChangedActionCallCount = 0;
+        var onInitializedAyncActionCallCount = 0;
+        var onParametersSetAsyncActionCallCount = 0;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        disableStateHasChangedAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                Assert.Equal("Value1", component.Property1);
+                Assert.Equal("Value2", component.Property2);
+                enforceStateHasChangedActionCallCount++;
+            })
+            .Returns(true);
+        onInitializedAyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onInitializedAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onInitializedAyncActionCallCount++;
+            })
+            .Returns(Task.CompletedTask);
+
+        var task = new TaskCompletionSource();
+        onParametersSetAsyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onParametersSetAsyncActionCallCount++;
+            })
+            .Returns(task.Task);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAsyncAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+
+                task.SetException(new InvalidOperationException());
+                task = new TaskCompletionSource();
+            });
+
+        var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
+        {
+            { nameof(TestComponent.Property1), "Value1" },
+            { nameof(TestComponent.Property2), "Value2" }
+        });
+
+        // act
+        await component.ExecuteInvokeAsync(
+            async () => await Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await component.SetParametersAsync(parameters)));
+
+        // assert
+        disableStateHasChangedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAsyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+
+        Assert.Equal(1, enforceStateHasChangedActionCallCount);
+        Assert.Equal(1, onInitializedAyncActionCallCount);
+        Assert.Equal(1, onParametersSetAsyncActionCallCount);
+    }
+
+    [Fact]
+    public async Task TestSetParametersAsync_NoSecondStateHasChangedX()
+    {
+        // arrange
+        var enforceStateHasChangedActionCallCount = 0;
+        var onInitializedAyncActionCallCount = 0;
+        var onParametersSetAsyncActionCallCount = 0;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        disableStateHasChangedAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                Assert.Equal("Value1", component.Property1);
+                Assert.Equal("Value2", component.Property2);
+                enforceStateHasChangedActionCallCount++;
+            })
+            .Returns(false);
+        onInitializedAyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onInitializedAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onInitializedAyncActionCallCount++;
+            })
+            .Returns(Task.CompletedTask);
+
+        var task = new TaskCompletionSource();
+        onParametersSetAsyncAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+                onParametersSetAsyncActionCallCount++;
+            })
+            .Returns(task.Task);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                onParametersSetAsyncAction.Verify(
+                    obj => obj.Invoke(),
+                    Times.Once);
+
+                task.SetException(new InvalidOperationException());
+                task = new TaskCompletionSource();
+            });
+
+        var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
+        {
+            { nameof(TestComponent.Property1), "Value1" },
+            { nameof(TestComponent.Property2), "Value2" }
+        });
+
+        // act
+        await component.ExecuteInvokeAsync(
+            async () => await Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await component.SetParametersAsync(parameters)));
+
+        // assert
+        disableStateHasChangedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onInitializedAyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+        onParametersSetAsyncAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Once);
+
+        Assert.Equal(1, enforceStateHasChangedActionCallCount);
+        Assert.Equal(1, onInitializedAyncActionCallCount);
+        Assert.Equal(1, onParametersSetAsyncActionCallCount);
+    }
 
     //[Fact]
     //public async Task TestInvokeAsync()

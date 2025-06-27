@@ -16,7 +16,7 @@ public partial class LighthouseComponentBaseTest
     private readonly Mock<Action<bool>> onAfterRenderAction;
     private readonly Mock<Func<bool, Task>> onAfterRenderAsyncAction;
     private readonly Mock<Func<bool>> shouldRenderAction;
-    private readonly Mock<Func<bool>> enforceStateHasChangedAction;
+    private readonly Mock<Func<bool>> disableStateHasChangedAction;
 
     private readonly TestComponent component;
 
@@ -32,7 +32,7 @@ public partial class LighthouseComponentBaseTest
         onAfterRenderAction = new();
         onAfterRenderAsyncAction = new();
         shouldRenderAction = new();
-        enforceStateHasChangedAction = new();
+        disableStateHasChangedAction = new();
 
         component = new TestComponent()
         {
@@ -44,7 +44,7 @@ public partial class LighthouseComponentBaseTest
             OnAfterRenderAction = onAfterRenderAction.Object,
             OnAfterRenderAsyncAction = onAfterRenderAsyncAction.Object,
             ShouldRenderAction = shouldRenderAction.Object,
-            EnforceStateHasChangedAction = enforceStateHasChangedAction.Object
+            DisableStateHasChangedAction = disableStateHasChangedAction.Object
         };
 
         renderer = RendererFake.Create();
@@ -61,7 +61,7 @@ public partial class LighthouseComponentBaseTest
         public required Action<bool> OnAfterRenderAction { get; init; }
         public required Func<bool, Task> OnAfterRenderAsyncAction { get; init; }
         public required Func<bool> ShouldRenderAction { get; init; }
-        public required Func<bool> EnforceStateHasChangedAction { get; init; }
+        public required Func<bool> DisableStateHasChangedAction { get; init; }
 
         [Parameter]
         public object? Property1 { get; set; }
@@ -93,6 +93,11 @@ public partial class LighthouseComponentBaseTest
             StateHasChanged();
         }
 
+        public void ExecuteEnforceStateHasChanged()
+        {
+            EnforceStateHasChanged();
+        }
+
         public Task ExecuteOnInitializedAsync()
         {
             return base.OnInitializedAsync();
@@ -113,9 +118,9 @@ public partial class LighthouseComponentBaseTest
             return base.ShouldRender();
         }
 
-        public bool ExecuteEnforceStateHasChanged()
+        public bool ExecuteDisableStateHasChanged()
         {
-            return base.EnforceStateHasChanged();
+            return base.DisableStateHasChanged();
         }
 
         protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -158,9 +163,9 @@ public partial class LighthouseComponentBaseTest
             return ShouldRenderAction.Invoke();
         }
 
-        protected override bool EnforceStateHasChanged()
+        protected override bool DisableStateHasChanged()
         {
-            return EnforceStateHasChangedAction.Invoke();
+            return DisableStateHasChangedAction.Invoke();
         }
     }
 }

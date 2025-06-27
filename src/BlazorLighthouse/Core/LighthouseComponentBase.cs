@@ -92,23 +92,37 @@ public class LighthouseComponentBase
     public Task SetParametersAsync(ParameterView parameters)
     {
         parameters.SetParameterProperties(this);
-        var callStateHasChanged = EnforceStateHasChanged();
 
         if (!initialized)
         {
             initialized = true;
-            return CallInitAndSetParametersAsync(callStateHasChanged);
+            return CallInitAndSetParametersAsync();
         }
 
-        return CallOnParametersSetAsync(callStateHasChanged);
+        return CallOnParametersSetAndStateHasChangedAsync();
     }
 
     /// <summary>
     /// Notifies the component that its state has changed. When applicable, this will
-    /// cause the component to be re-rendered.
+    /// cause the component to be re-rendered. This behavior can be disabled by overriding
+    /// <see cref="DisableStateHasChanged"/>.
     /// </summary>
     //TODO
     protected void StateHasChanged()
+    {
+        if (DisableStateHasChanged() && !hasNeverRendered)
+            return;
+
+        EnforceStateHasChanged();
+    }
+
+    /// <summary>
+    /// Notifies the component that its state has changed. When applicable, this will
+    /// cause the component to be re-rendered. This behavior is always enforced, 
+    /// regardless of the return value of <see cref="DisableStateHasChanged"/>.
+    /// </summary>
+    //TODO
+    protected void EnforceStateHasChanged()
     {
         QueueRenderingIfNecessary(renderId);
     }
@@ -264,9 +278,9 @@ public class LighthouseComponentBase
     /// Returns a flag to indicate when state has changed should be called.
     /// </summary>
     /// <returns></returns>
-    protected virtual bool EnforceStateHasChanged()
+    protected virtual bool DisableStateHasChanged()
     {
-        return true;
+        return false;
     }
 
     private void TrackAndBuildRenderTree(RenderTreeBuilder builder)
@@ -280,20 +294,19 @@ public class LighthouseComponentBase
         });
     }
 
-    private async Task CallInitAndSetParametersAsync(bool callStateHasChanged)
+    private async Task CallInitAndSetParametersAsync()
     {
         var onInitTask = CallOnInitializedAsync();
         if (!ShouldAwaitTask(onInitTask))
         {
-            await CallOnParametersSetAsync(callStateHasChanged);
+            await CallOnParametersSetAndStateHasChangedAsync();
             return;
         }
 
-        if (callStateHasChanged)
-            StateHasChanged();
+        StateHasChanged();
 
         await WaitForAsyncTaskCompletion(onInitTask);
-        await CallOnParametersSetAsync(callStateHasChanged);
+        await CallOnParametersSetAndStateHasChangedAsync();
     }
 
     [DebuggerDisableUserUnhandledExceptions]
@@ -304,9 +317,9 @@ public class LighthouseComponentBase
             OnInitialized();
             return OnInitializedAsync();
         }
-        catch (Exception ex) when (ex is not NavigationException)
+        catch (Exception exception) when (exception is not NavigationException)
         {
-            Debugger.BreakForUserUnhandledException(ex);
+            Debugger.BreakForUserUnhandledException(exception);
             throw;
         }
     }
@@ -316,50 +329,43 @@ public class LighthouseComponentBase
         return task.Status is not TaskStatus.RanToCompletion
             and not TaskStatus.Canceled;
     }
-
-    private Task CallOnParametersSetAsync(bool callStateHasChanged)
+ 
+    private Task CallOnParametersSetAndStateHasChangedAsync()
     {
-        var onParametersSetTask = CallOnParametersSetAsync();
-        return CallStateHasChangedAfterAsyncTask(
-            onParametersSetTask,
-            callStateHasChanged);
+        var onParametersSetTask = CallOnParameterSetAsync();
+        return CallStateHasChangedAfterAsyncTask(onParametersSetTask);
     }
 
     [DebuggerDisableUserUnhandledExceptions]
-    private Task CallOnParametersSetAsync()
+    private Task CallOnParameterSetAsync()
     {
         try
         {
             OnParametersSet();
             return OnParametersSetAsync();
         }
-        catch (Exception ex) when (ex is not NavigationException)
+        catch (Exception exception) when (exception is not NavigationException)
         {
-            Debugger.BreakForUserUnhandledException(ex);
+            Debugger.BreakForUserUnhandledException(exception);
             throw;
         }
     }
 
-    private Task CallStateHasChangedAfterAsyncTask(Task task, bool callStateHasChanged)
+    private Task CallStateHasChangedAfterAsyncTask(Task task)
     {
         var shouldAwaitTask = ShouldAwaitTask(task);
-
-        if (callStateHasChanged)
-            StateHasChanged();
+        StateHasChanged();
 
         if (!shouldAwaitTask)
             return Task.CompletedTask;
 
-        return CallStateHasChangedOnAsyncCompletion(task, callStateHasChanged);
+        return CallStateHasChangedOnAsyncCompletion(task);
     }
 
-    private async Task CallStateHasChangedOnAsyncCompletion(Task task, bool callStateHasChanged)
+    private async Task CallStateHasChangedOnAsyncCompletion(Task task)
     {
-        if (!await WaitForAsyncTaskCompletion(task) 
-            || !callStateHasChanged)
-        {
+        if (!await WaitForAsyncTaskCompletion(task)) 
             return;
-        }
 
         StateHasChanged();
     }
@@ -445,8 +451,7 @@ public class LighthouseComponentBase
     Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg)
     {
         var eventTask = callback.InvokeAsync(arg);
-        var callStateHasChanged = EnforceStateHasChanged();
-        return CallStateHasChangedAfterAsyncTask(eventTask, callStateHasChanged);
+        return CallStateHasChangedAfterAsyncTask(eventTask);
     }
 
     //TODO
