@@ -88,7 +88,6 @@ public class LighthouseComponentBase
     /// will be unchanged.
     /// </para>
     /// </remarks>
-    //TODO
     public Task SetParametersAsync(ParameterView parameters)
     {
         parameters.SetParameterProperties(this);
@@ -132,7 +131,6 @@ public class LighthouseComponentBase
     /// synchronization context.
     /// </summary>
     /// <param name="workItem">The work item to execute.</param>
-    //TODO
     protected Task InvokeAsync(Action workItem)
     {
         return renderHandle.Dispatcher.InvokeAsync(workItem);
@@ -143,7 +141,6 @@ public class LighthouseComponentBase
     /// synchronization context.
     /// </summary>
     /// <param name="workItem">The work item to execute.</param>
-    //TODO
     protected Task InvokeAsync(Func<Task> workItem)
     {
         return renderHandle.Dispatcher.InvokeAsync(workItem);
@@ -159,7 +156,6 @@ public class LighthouseComponentBase
     /// </summary>
     /// <param name="exception">The <see cref="Exception"/> that will be dispatched to the renderer.</param>
     /// <returns>A <see cref="Task"/> that will be completed when the exception has finished dispatching.</returns>
-    //TODO
     protected Task DispatchExceptionAsync(Exception exception)
     {
         return renderHandle.DispatchExceptionAsync(exception);
@@ -419,7 +415,7 @@ public class LighthouseComponentBase
 
     private void QueueRenderingIfNecessary(long previousRenderId)
     {
-        if (HasPendingQueuedRender || previousRenderId != renderId)
+        if (previousRenderId != renderId)
             return;
 
         if (!hasNeverRendered
@@ -441,20 +437,17 @@ public class LighthouseComponentBase
         InvokeAsync(() => QueueRenderingIfNecessary(renderId));
     }
 
-    //TODO
     void IRefreshable.Dispose(AbstractSignal signal)
     {
         accessTracker.Untrack(signal);
     }
 
-    //TODO
     Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg)
     {
         var eventTask = callback.InvokeAsync(arg);
         return CallStateHasChangedAfterAsyncTask(eventTask);
     }
 
-    //TODO
     Task IHandleAfterRender.OnAfterRenderAsync()
     {
         var firstRender = !hasCalledOnAfterRender;

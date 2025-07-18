@@ -11,10 +11,11 @@ internal class RendererFake(
     ILoggerFactory loggerFactory) 
         : Renderer(serviceProvider, loggerFactory)
 {
-    public int GetComponentRenderModeCallCount { get; private set; }
-
-    protected override RendererInfo RendererInfo { get; }  = new(nameof(RendererFake), true);
+    protected override RendererInfo RendererInfo { get; } = new(nameof(RendererFake), true);
     public override Dispatcher Dispatcher { get; } = Dispatcher.CreateDefault();
+
+    public int GetComponentRenderModeCallCount { get; private set; }
+    public Exception? HandledException { get; private set; }
 
     public void Attach(IComponent component)
     {
@@ -32,7 +33,7 @@ internal class RendererFake(
     }
     protected override void HandleException(Exception exception)
     {
-        throw exception;
+        HandledException = exception;
     }
 
     protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)

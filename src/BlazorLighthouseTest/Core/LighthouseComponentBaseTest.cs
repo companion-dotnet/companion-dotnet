@@ -83,11 +83,6 @@ public partial class LighthouseComponentBaseTest
             return AssignedRenderMode;
         }
 
-        public Task ExecuteInvokeAsync(Action action)
-        {
-            return InvokeAsync(action);
-        }
-
         public void ExecuteStateHasChanged()
         {
             StateHasChanged();
@@ -96,6 +91,21 @@ public partial class LighthouseComponentBaseTest
         public void ExecuteEnforceStateHasChanged()
         {
             EnforceStateHasChanged();
+        }
+
+        public Task ExecuteInvokeAsync(Action workItem)
+        {
+            return InvokeAsync(workItem);
+        }
+
+        public Task ExecuteInvokeAsync(Func<Task> workItem)
+        {
+            return InvokeAsync(workItem);
+        }
+
+        public Task ExecuteDispatchExceptionAsync(Exception exception)
+        {
+            return DispatchExceptionAsync(exception);
         }
 
         public Task ExecuteOnInitializedAsync()
