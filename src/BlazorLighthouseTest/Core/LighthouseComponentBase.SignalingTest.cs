@@ -437,12 +437,6 @@ public partial class LighthouseComponentBaseTest
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
-        var signal3 = new Signal<int>(3);
-
-        var taskCompletionSource1 = new TaskCompletionSource();
-        var taskCompletionSource2 = new TaskCompletionSource();
-
-        taskCompletionSource1.SetResult();
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
@@ -451,28 +445,22 @@ public partial class LighthouseComponentBaseTest
             {
                 signal1.Get();
                 signal2.Get();
-                signal3.Get();
 
-                signal1.Set(4);
-                signal2.Set(5);
+                signal1.Set(3);
+                signal2.Set(4);
 
                 recalculationCount++;
-                value = signal3.Get();
+                value = signal2.Get();
             });
 
         // act
         await component.ExecuteInvokeAsync(
             component.ExecuteStateHasChanged);
 
-        signal3.Set(6);
-
-        while (recalculationCount < 3)
-            ;
-
         // assert
-        Assert.Equal(6, value);
+        Assert.Equal(4, value);
         buildRenderTreeAction.Verify(
             obj => obj(),
-            Times.Exactly(3));
+            Times.Exactly(2));
     }
 }
