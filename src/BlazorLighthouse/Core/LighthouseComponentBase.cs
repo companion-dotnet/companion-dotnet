@@ -106,7 +106,6 @@ public class LighthouseComponentBase
     /// cause the component to be re-rendered. This behavior can be disabled by overriding
     /// <see cref="DisableStateHasChanged"/>.
     /// </summary>
-    //TODO
     protected void StateHasChanged()
     {
         if (DisableStateHasChanged() && !hasNeverRendered)
@@ -120,7 +119,6 @@ public class LighthouseComponentBase
     /// cause the component to be re-rendered. This behavior is always enforced, 
     /// regardless of the return value of <see cref="DisableStateHasChanged"/>.
     /// </summary>
-    //TODO
     protected void EnforceStateHasChanged()
     {
         QueueRenderingIfNecessary(renderId);

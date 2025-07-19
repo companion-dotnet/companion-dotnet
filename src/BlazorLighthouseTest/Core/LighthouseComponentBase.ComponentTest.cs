@@ -407,38 +407,80 @@ public partial class LighthouseComponentBaseTest
     }
 
     [Fact]
-    public async Task TestStateHasChanged_ShouldRenderA()
+    public async Task TestStateHasChanged_MultipleRendersAtOnce()
     {
         // arrange
-        var taskCompletionSource1 = new TaskCompletionSource();
-        var taskCompletionSource2 = new TaskCompletionSource();
+        var isFirstBuildRenderTreeActionCall = true;
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() =>
             {
-                component.ExecuteStateHasChanged();
+                if (isFirstBuildRenderTreeActionCall)
+                {
+                    component.ExecuteStateHasChanged();
+                    component.ExecuteStateHasChanged();
+                }
 
-                taskCompletionSource1.SetResult();
-                taskCompletionSource2.Task.Wait();
-
-                taskCompletionSource1 = new();
+                isFirstBuildRenderTreeActionCall = false;
             });
 
         // act & assert
-        var task = Task.Run(() => 
-            component.ExecuteInvokeAsync(
-                component.ExecuteStateHasChanged));
-
-        await taskCompletionSource1.Task;
-        component.ExecuteStateHasChanged();
-
-        taskCompletionSource2.SetResult();
-        await task;
+        await component.ExecuteInvokeAsync(
+            component.ExecuteStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
-            Times.Once);
+            Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task TestStateHasChanged_MultipleRendersAfterEachOther()
+    {
+        // arrange
+        var isFirstBuildRenderTreeActionCall = true;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                if (isFirstBuildRenderTreeActionCall)
+                    component.ExecuteStateHasChanged();
+
+                isFirstBuildRenderTreeActionCall = false;
+            });
+
+        // act & assert
+        await component.ExecuteInvokeAsync(
+            component.ExecuteStateHasChanged);
+        await component.ExecuteInvokeAsync(
+            component.ExecuteStateHasChanged);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Exactly(3));
+    }
+
+    [Fact]
+    public async Task TestStateHasChanged_RendererUninitialized()
+    {
+        // act & assert
+        renderer.ThrowExceptionOnRender = true;
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await component.ExecuteInvokeAsync(
+                component.ExecuteStateHasChanged));
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Never);
+
+        renderer.ThrowExceptionOnRender = false;
+        await component.ExecuteInvokeAsync(
+            component.ExecuteStateHasChanged);
+        
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Exactly(2));
     }
 
     [Fact]
@@ -451,13 +493,6 @@ public partial class LighthouseComponentBaseTest
             .Returns(true);
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteEnforceStateHasChanged);
-
-        buildRenderTreeAction.Verify(
-            obj => obj.Invoke(),
-            Times.Once);
-
         await component.ExecuteInvokeAsync(
             component.ExecuteEnforceStateHasChanged);
 
@@ -487,6 +522,83 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
+    }
+
+    [Fact]
+    public async Task TestEnforceStateHasChanged_MultipleRendersAtOnce()
+    {
+        // arrange
+        var isFirstBuildRenderTreeActionCall = true;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                if (isFirstBuildRenderTreeActionCall)
+                {
+                    component.ExecuteEnforceStateHasChanged();
+                    component.ExecuteEnforceStateHasChanged();
+                }
+
+                isFirstBuildRenderTreeActionCall = false;
+            });
+
+        // act & assert
+        await component.ExecuteInvokeAsync(
+            component.ExecuteEnforceStateHasChanged);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task TestEnforceStateHasChanged_MultipleRendersAfterEachOther()
+    {
+        // arrange
+        var isFirstBuildRenderTreeActionCall = true;
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                if (isFirstBuildRenderTreeActionCall)
+                    component.ExecuteEnforceStateHasChanged();
+
+                isFirstBuildRenderTreeActionCall = false;
+            });
+
+        // act & assert
+        await component.ExecuteInvokeAsync(
+            component.ExecuteEnforceStateHasChanged);
+        await component.ExecuteInvokeAsync(
+            component.ExecuteEnforceStateHasChanged);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Exactly(3));
+    }
+
+    [Fact]
+    public async Task TestEnforceStateHasChanged_RendererUninitialized()
+    {
+        // act & assert
+        renderer.ThrowExceptionOnRender = true;
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await component.ExecuteInvokeAsync(
+                component.ExecuteEnforceStateHasChanged));
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Never);
+
+        renderer.ThrowExceptionOnRender = false;
+        await component.ExecuteInvokeAsync(
+            component.ExecuteEnforceStateHasChanged);
+
+        buildRenderTreeAction.Verify(
+            obj => obj.Invoke(),
+            Times.Exactly(2));
     }
 
     [Fact]

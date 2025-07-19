@@ -17,6 +17,8 @@ internal class RendererFake(
     public int GetComponentRenderModeCallCount { get; private set; }
     public Exception? HandledException { get; private set; }
 
+    public bool ThrowExceptionOnRender { get; set; }
+
     public void Attach(IComponent component)
     {
         AssignRootComponentId(component);
@@ -45,6 +47,14 @@ internal class RendererFake(
     {
         GetComponentRenderModeCallCount++;
         return new ComponentRenderMode();
+    }
+
+    protected override void ProcessPendingRender()
+    {
+        if (ThrowExceptionOnRender)
+            throw new InvalidOperationException();
+
+        base.ProcessPendingRender();
     }
 
     public static RendererFake Create()
