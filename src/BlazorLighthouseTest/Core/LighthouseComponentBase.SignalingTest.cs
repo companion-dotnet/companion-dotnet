@@ -17,8 +17,8 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => siganlValue = signal.Get());
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -68,14 +68,14 @@ public partial class LighthouseComponentBaseTest
         otherBuildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => signalValue = signal.Get());
 
-        await otherComponent.ExecuteInvokeAsync(
-            otherComponent.ExecuteStateHasChanged);
+        await otherComponent.CallBaseInvokeAsync(
+            otherComponent.CallBaseStateHasChanged);
 
         otherBuildRenderTreeAction.Invocations.Clear();
 
         // act
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         // assert
         Assert.Equal(3, signalValue);
@@ -99,8 +99,8 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => siganlValue = signal.Get());
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -126,8 +126,8 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => siganlValue = signal.Get());
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -155,8 +155,8 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => siganlValue = signal1.Get());
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -190,8 +190,8 @@ public partial class LighthouseComponentBaseTest
                 siganlValue = signal2.Get();
             });
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -227,8 +227,8 @@ public partial class LighthouseComponentBaseTest
             .Callback(() => computedValue = computed.Get() + signal2.Get());
 
         // act
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         // assert
         Assert.Equal(3, computedValue);
@@ -258,8 +258,8 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => computedValue = computed.Get() + signal2.Get());
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -294,8 +294,8 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => computedValue = computed.Get() + signal2.Get());
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -345,14 +345,14 @@ public partial class LighthouseComponentBaseTest
         otherBuildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => computedValue = computed.Get());
 
-        await otherComponent.ExecuteInvokeAsync(
-            otherComponent.ExecuteStateHasChanged);
+        await otherComponent.CallBaseInvokeAsync(
+            otherComponent.CallBaseStateHasChanged);
 
         otherBuildRenderTreeAction.Invocations.Clear();
 
         // act
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         // assert
         Assert.Equal(3, computedValue);
@@ -376,8 +376,8 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => siganlValue = signal.Get());
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -390,8 +390,8 @@ public partial class LighthouseComponentBaseTest
             obj => obj.Invoke(),
             Times.Never);
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
         Assert.IsType<InvalidOperationException>(
             renderer.HandledException);
     }
@@ -410,8 +410,8 @@ public partial class LighthouseComponentBaseTest
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() => siganlValue = signal.Get());
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Invocations.Clear();
 
@@ -454,8 +454,8 @@ public partial class LighthouseComponentBaseTest
             });
 
         // act
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         // assert
         Assert.Equal(4, value);
@@ -473,10 +473,10 @@ public partial class LighthouseComponentBaseTest
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
-        var signal3 = new Signal<int>(3);
 
         var taskCompletionSource1 = new TaskCompletionSource();
         var taskCompletionSource2 = new TaskCompletionSource();
+
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
@@ -484,29 +484,28 @@ public partial class LighthouseComponentBaseTest
             {
                 signal1.Get();
                 signal2.Get();
-                signal3.Get();
 
                 taskCompletionSource1.SetResult();
                 taskCompletionSource2.Task.Wait();
 
                 signal1.Set(4);
-                signal2.Set(5);
 
                 recalculationCount++;
-                value = signal3.Get();
+                value = signal2.Get();
             });
 
         // act
-        var task1 = Task.Run(
-            () => component.ExecuteInvokeAsync(
-                component.ExecuteStateHasChanged));
+        var task = Task.Run(
+            () => component.CallBaseInvokeAsync(
+                component.CallBaseStateHasChanged));
 
         await taskCompletionSource1.Task;
+
         taskCompletionSource1 = new();
-        signal3.Set(6);
+        signal2.Set(6);
 
         taskCompletionSource2.SetResult();
-        await task1;
+        await task;
 
         // assert
         Assert.Equal(6, value);

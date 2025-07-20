@@ -83,72 +83,72 @@ public partial class LighthouseComponentBaseTest
             return AssignedRenderMode;
         }
 
-        public void ExecuteStateHasChanged()
+        public void CallBaseStateHasChanged()
         {
             StateHasChanged();
         }
 
-        public void ExecuteEnforceStateHasChanged()
+        public void CallBaseEnforceStateHasChanged()
         {
             EnforceStateHasChanged();
         }
 
-        public Task ExecuteInvokeAsync(Action workItem)
+        public Task CallBaseInvokeAsync(Action workItem)
         {
             return InvokeAsync(workItem);
         }
 
-        public Task ExecuteInvokeAsync(Func<Task> workItem)
+        public Task CallBaseInvokeAsync(Func<Task> workItem)
         {
             return InvokeAsync(workItem);
         }
 
-        public Task ExecuteDispatchExceptionAsync(Exception exception)
+        public Task CallBaseDispatchExceptionAsync(Exception exception)
         {
             return DispatchExceptionAsync(exception);
         }
 
-        public void ExecuteBuildRenderTree(RenderTreeBuilder renderTreeBuilder)
+        public void CallBaseBuildRenderTree(RenderTreeBuilder renderTreeBuilder)
         {
             base.BuildRenderTree(renderTreeBuilder);
         }
 
-        public void ExecuteOnInitialized()
+        public void CallBaseOnInitialized()
         {
             base.OnInitialized();
         }
 
-        public Task ExecuteOnInitializedAsync()
+        public Task CallBaseOnInitializedAsync()
         {
             return base.OnInitializedAsync();
         }
 
-        public void ExecuteOnParametersSet()
+        public void CallBaseOnParametersSet()
         {
             base.OnParametersSet();
         }
 
-        public Task ExecuteOnParametersSetAsync()
+        public Task CallBaseParametersSetAsync()
         {
             return base.OnParametersSetAsync();
         }
 
-        public void ExecuteOnAfterRender(bool firstRender)
+        public void CallBaseOnAfterRender(bool firstRender)
         {
             base.OnAfterRender(firstRender);
         }
 
-        public Task ExecuteOnAfterRenderAsync(bool firstRender)
+        public Task CallBaseOnAfterRenderAsync(bool firstRender)
         {
             return base.OnAfterRenderAsync(firstRender);
         }
 
-        public bool ExecuteShouldRender()
+        public bool CallBaseShouldRender()
         {
             return base.ShouldRender();
         }
 
-        public bool ExecuteDisableStateHasChanged()
+        public bool CallBaseDisableStateHasChanged()
         {
             return base.DisableStateHasChanged();
         }

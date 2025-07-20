@@ -42,99 +42,11 @@ public partial class LighthouseComponentBaseTest
     public void TestAttach()
     {
         // arrange
-        var renderer2 = RendererFake.Create();
+        var unattachedRenderer = RendererFake.Create();
 
         // act & assert
         Assert.Throws<InvalidOperationException>(
-            () => renderer2.Attach(component));
-    }
-    
-    [Fact]
-    public void TestBuildRenderTree()
-    {
-        // arrange
-        var renderTreeBuilder = new RenderTreeBuilder();
-
-        // act
-        component.ExecuteBuildRenderTree(renderTreeBuilder);
-    }
-    
-    
-    [Fact]
-    public void TestOnInitialized()
-    {
-        // act
-        component.ExecuteOnInitialized();
-    }
-    
-    [Fact]
-    public void TestOnInitializedAsync()
-    {
-        // act
-        var result = component.ExecuteOnInitializedAsync();
-
-        // assert
-        Assert.Equal(Task.CompletedTask, result);
-    }
-    
-    [Fact]
-    public void TestOnParametersSet()
-    {
-        // act
-        component.ExecuteOnParametersSet();
-    }
-    
-    
-    [Fact]
-    public void TestOnParametersSetAsync()
-    {
-        // act
-        var result = component.ExecuteOnParametersSetAsync();
-
-        // assert
-        Assert.Equal(Task.CompletedTask, result);
-    }
-    
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void TestOnAfterRender(bool firstRender)
-    {
-        // act
-        component.ExecuteOnAfterRender(firstRender);
-    }
-    
-    
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void TestOnAfterRenderAsync(bool firstRender)
-    {
-        // act
-        var result = component.ExecuteOnAfterRenderAsync(firstRender);
-
-        // assert
-        Assert.Equal(Task.CompletedTask, result);
-    }
-    
-    [Fact]
-    public void TestShouldRender()
-    {
-        // act
-        var result = component.ExecuteShouldRender();
-
-        // assert
-        Assert.True(result);
-    }
-    
-    [Fact]
-    public void TestDisableStateHasChanged()
-    {
-        // act
-        var result = component.ExecuteDisableStateHasChanged();
-
-        // assert
-        Assert.False(result);
+            () => unattachedRenderer.Attach(component));
     }
 
     [Theory]
@@ -185,7 +97,7 @@ public partial class LighthouseComponentBaseTest
             onParametersSetAsyncAction.Setup(obj => obj.Invoke())
                 .Returns(Task.CompletedTask);
 
-            await component.ExecuteInvokeAsync(
+            await component.CallBaseInvokeAsync(
                 async () => await component.SetParametersAsync(
                     ParameterView.FromDictionary(new Dictionary<string, object?>())));
 
@@ -199,7 +111,7 @@ public partial class LighthouseComponentBaseTest
         }
 
         var onParametersSetAsyncTaskCompletionSource = new TaskCompletionSource();
-        Action<TaskCompletionSource> onParameterSetAsyncTaskCompleter = 
+        Action<TaskCompletionSource> onParameterSetAsyncTaskCompleter =
             taskCompletionSource => taskCompletionSource.SetResult();
 
         if (throwOnOnParametersSetAsync)
@@ -306,7 +218,8 @@ public partial class LighthouseComponentBaseTest
                     onParametersSetAsyncAction.Verify(
                         obj => obj.Invoke(),
                         Times.Never);
-                } else
+                }
+                else
                 {
                     onParametersSetAsyncAction.Verify(
                         obj => obj.Invoke(),
@@ -333,13 +246,14 @@ public partial class LighthouseComponentBaseTest
         Exception? thrownException = null;
 
         // act
-        await component.ExecuteInvokeAsync(
+        await component.CallBaseInvokeAsync(
             async () =>
             {
                 try
                 {
                     await component.SetParametersAsync(parameters);
-                } catch (Exception exception)
+                }
+                catch (Exception exception)
                 {
                     thrownException = exception;
                 }
@@ -371,11 +285,21 @@ public partial class LighthouseComponentBaseTest
             obj => obj.Invoke(),
             Times.Exactly(excpectedBuildRenderTreeCallCount));
 
-        Assert.Equal(expectedOnInitializedCallCount, onInitializedActionCallCount);
-        Assert.Equal(expectedOnInitializedAsyncCallCount, onInitializedAyncActionCallCount);
-        Assert.Equal(expectedOnParametersSetCallCount, onParametersSetActionCallCount);
-        Assert.Equal(expectedOnParametersSetAsyncCallCount, onParametersSetAsyncActionCallCount);
-        Assert.Equal(excpectedBuildRenderTreeCallCount, buildRenderTreeActionCallCount);
+        Assert.Equal(
+            expectedOnInitializedCallCount,
+            onInitializedActionCallCount);
+        Assert.Equal(
+            expectedOnInitializedAsyncCallCount,
+            onInitializedAyncActionCallCount);
+        Assert.Equal(
+            expectedOnParametersSetCallCount,
+            onParametersSetActionCallCount);
+        Assert.Equal(
+            expectedOnParametersSetAsyncCallCount,
+            onParametersSetAsyncActionCallCount);
+        Assert.Equal(
+            excpectedBuildRenderTreeCallCount,
+            buildRenderTreeActionCallCount);
     }
 
     [Fact]
@@ -386,8 +310,8 @@ public partial class LighthouseComponentBaseTest
             .Returns(true);
 
         // act
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         // assert
         buildRenderTreeAction.Verify(
@@ -405,15 +329,15 @@ public partial class LighthouseComponentBaseTest
             .Returns(true);
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -428,15 +352,15 @@ public partial class LighthouseComponentBaseTest
             .Returns(false);
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -455,16 +379,16 @@ public partial class LighthouseComponentBaseTest
             {
                 if (isFirstBuildRenderTreeActionCall)
                 {
-                    component.ExecuteStateHasChanged();
-                    component.ExecuteStateHasChanged();
+                    component.CallBaseStateHasChanged();
+                    component.CallBaseStateHasChanged();
                 }
 
                 isFirstBuildRenderTreeActionCall = false;
             });
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -482,16 +406,16 @@ public partial class LighthouseComponentBaseTest
             .Callback(() =>
             {
                 if (isFirstBuildRenderTreeActionCall)
-                    component.ExecuteStateHasChanged();
+                    component.CallBaseStateHasChanged();
 
                 isFirstBuildRenderTreeActionCall = false;
             });
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -502,19 +426,19 @@ public partial class LighthouseComponentBaseTest
     public async Task TestStateHasChanged_RendererUninitialized()
     {
         // act & assert
-        renderer.ThrowExceptionOnRender = true;
+        renderer.ThrowExceptionOnRendering = true;
         await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await component.ExecuteInvokeAsync(
-                component.ExecuteStateHasChanged));
+            async () => await component.CallBaseInvokeAsync(
+                component.CallBaseStateHasChanged));
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Never);
 
-        renderer.ThrowExceptionOnRender = false;
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
-        
+        renderer.ThrowExceptionOnRendering = false;
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
+
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Exactly(2));
@@ -530,8 +454,8 @@ public partial class LighthouseComponentBaseTest
             .Returns(true);
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteEnforceStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseEnforceStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -546,15 +470,15 @@ public partial class LighthouseComponentBaseTest
             .Returns(false);
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteEnforceStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseEnforceStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
 
-        await component.ExecuteInvokeAsync(
-            component.ExecuteEnforceStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseEnforceStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -573,16 +497,16 @@ public partial class LighthouseComponentBaseTest
             {
                 if (isFirstBuildRenderTreeActionCall)
                 {
-                    component.ExecuteEnforceStateHasChanged();
-                    component.ExecuteEnforceStateHasChanged();
+                    component.CallBaseEnforceStateHasChanged();
+                    component.CallBaseEnforceStateHasChanged();
                 }
 
                 isFirstBuildRenderTreeActionCall = false;
             });
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteEnforceStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseEnforceStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -600,16 +524,16 @@ public partial class LighthouseComponentBaseTest
             .Callback(() =>
             {
                 if (isFirstBuildRenderTreeActionCall)
-                    component.ExecuteEnforceStateHasChanged();
+                    component.CallBaseEnforceStateHasChanged();
 
                 isFirstBuildRenderTreeActionCall = false;
             });
 
         // act & assert
-        await component.ExecuteInvokeAsync(
-            component.ExecuteEnforceStateHasChanged);
-        await component.ExecuteInvokeAsync(
-            component.ExecuteEnforceStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseEnforceStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseEnforceStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -619,19 +543,19 @@ public partial class LighthouseComponentBaseTest
     [Fact]
     public async Task TestEnforceStateHasChanged_RendererUninitialized()
     {
-        // act & assert
-        renderer.ThrowExceptionOnRender = true;
+        // arrange, act & assert
+        renderer.ThrowExceptionOnRendering = true;
         await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await component.ExecuteInvokeAsync(
-                component.ExecuteEnforceStateHasChanged));
+            async () => await component.CallBaseInvokeAsync(
+                component.CallBaseEnforceStateHasChanged));
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Never);
 
-        renderer.ThrowExceptionOnRender = false;
-        await component.ExecuteInvokeAsync(
-            component.ExecuteEnforceStateHasChanged);
+        renderer.ThrowExceptionOnRendering = false;
+        await component.CallBaseInvokeAsync(
+            component.CallBaseEnforceStateHasChanged);
 
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
@@ -642,8 +566,8 @@ public partial class LighthouseComponentBaseTest
     public async Task TestInvokeAsync()
     {
         // act
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         // assert
         buildRenderTreeAction.Verify(
@@ -655,11 +579,11 @@ public partial class LighthouseComponentBaseTest
     public async Task TestInvokeAsync_AsyncWorkItem()
     {
         // act
-        await component.ExecuteInvokeAsync(
+        await component.CallBaseInvokeAsync(
             async () =>
             {
                 await Task.Yield();
-                component.ExecuteStateHasChanged();
+                component.CallBaseStateHasChanged();
             });
 
         // assert
@@ -675,10 +599,98 @@ public partial class LighthouseComponentBaseTest
         var exception = new Exception();
 
         // act
-        await component.ExecuteDispatchExceptionAsync(exception);
+        await component.CallBaseDispatchExceptionAsync(exception);
 
         // assert
         Assert.Equal(exception, renderer.HandledException);
+    }
+
+    [Fact]
+    public void TestBuildRenderTree()
+    {
+        // arrange
+        var renderTreeBuilder = new RenderTreeBuilder();
+
+        // act
+        component.CallBaseBuildRenderTree(renderTreeBuilder);
+    }
+    
+    
+    [Fact]
+    public void TestOnInitialized()
+    {
+        // act
+        component.CallBaseOnInitialized();
+    }
+    
+    [Fact]
+    public void TestOnInitializedAsync()
+    {
+        // act
+        var result = component.CallBaseOnInitializedAsync();
+
+        // assert
+        Assert.Equal(Task.CompletedTask, result);
+    }
+    
+    [Fact]
+    public void TestOnParametersSet()
+    {
+        // act
+        component.CallBaseOnParametersSet();
+    }
+    
+    
+    [Fact]
+    public void TestOnParametersSetAsync()
+    {
+        // act
+        var result = component.CallBaseParametersSetAsync();
+
+        // assert
+        Assert.Equal(Task.CompletedTask, result);
+    }
+    
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TestOnAfterRender(bool firstRender)
+    {
+        // act
+        component.CallBaseOnAfterRender(firstRender);
+    }
+    
+    
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TestOnAfterRenderAsync(bool firstRender)
+    {
+        // act
+        var result = component.CallBaseOnAfterRenderAsync(firstRender);
+
+        // assert
+        Assert.Equal(Task.CompletedTask, result);
+    }
+    
+    [Fact]
+    public void TestShouldRender()
+    {
+        // act
+        var result = component.CallBaseShouldRender();
+
+        // assert
+        Assert.True(result);
+    }
+    
+    [Fact]
+    public void TestDisableStateHasChanged()
+    {
+        // act
+        var result = component.CallBaseDisableStateHasChanged();
+
+        // assert
+        Assert.False(result);
     }
 
     [Theory]
@@ -699,8 +711,8 @@ public partial class LighthouseComponentBaseTest
        bool cancelTask)
     {
         // arrange
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
 
         disableStateHasChangedAction.Reset();
         buildRenderTreeAction.Reset();
@@ -757,7 +769,7 @@ public partial class LighthouseComponentBaseTest
         Exception? thrownException = null;
 
         // act
-        await component.ExecuteInvokeAsync(
+        await component.CallBaseInvokeAsync(
             async () =>
             {
                 try
@@ -783,7 +795,9 @@ public partial class LighthouseComponentBaseTest
             obj => obj.Invoke(),
             Times.Exactly(excpectedBuildRenderTreeCallCount));
 
-        Assert.Equal(excpectedBuildRenderTreeCallCount, buildRenderTreeActionCallCount);
+        Assert.Equal(
+            excpectedBuildRenderTreeCallCount,
+            buildRenderTreeActionCallCount);
     }
 
     [Fact]
