@@ -8,91 +8,194 @@ namespace BlazorLighthouseTest.Core;
 
 public partial class LighthouseComponentBaseTest
 {
-    [Fact]
-    public async Task TestInvokeAsync()
+    private readonly Mock<Action> buildRenderTreeAction;
+    private readonly Mock<Action> onInitializedAction;
+    private readonly Mock<Func<Task>> onInitializedAyncAction;
+    private readonly Mock<Action> onParametersSetAction;
+    private readonly Mock<Func<Task>> onParametersSetAsyncAction;
+    private readonly Mock<Action<bool>> onAfterRenderAction;
+    private readonly Mock<Func<bool, Task>> onAfterRenderAsyncAction;
+    private readonly Mock<Func<bool>> shouldRenderAction;
+    private readonly Mock<Func<bool>> disableStateHasChangedAction;
+
+    private readonly TestComponent component;
+
+    private readonly RendererFake renderer;
+
+    public LighthouseComponentBaseTest()
     {
-        // arrange
-        var buildRenderTree = new Mock<Action>();
-        var component = new TestComponent(buildRenderTree.Object);
+        buildRenderTreeAction = new();
+        onInitializedAction = new();
+        onInitializedAyncAction = new();
+        onParametersSetAction = new();
+        onParametersSetAsyncAction = new();
+        onAfterRenderAction = new();
+        onAfterRenderAsyncAction = new();
+        shouldRenderAction = new();
+        disableStateHasChangedAction = new();
 
-        var rendererFake = RendererFake.Create();
-        rendererFake.Attach(component);
-
-        // act
-        await component.ExecuteInvokeAsync(
-            component.ExecuteStateHasChanged);
-
-        // assert
-        buildRenderTree.Verify(obj => obj.Invoke(), Times.Once);
-    }
-
-    [Fact]
-    public async Task TestStateHasChanged()
-    {
-        // arrange
-        var buildRenderTree = new Mock<Action>();
-        var component = new TestComponent(buildRenderTree.Object);
-
-        var rendererFake = RendererFake.Create();
-        rendererFake.Attach(component);
-
-        // act
-        await rendererFake.Dispatcher.InvokeAsync(
-            component.ExecuteStateHasChanged);
-
-        // assert
-        buildRenderTree.Verify(obj => obj.Invoke(), Times.Once);
-    }
-    
-    [Fact]
-    public async Task TestStateHasChanged_MultipleComponentRedraws()
-    {
-        // arrange
-        var innerBuildRenderTree = new Mock<Action>();
-        var innerComponent = new TestComponent(() => innerBuildRenderTree.Object());
-
-        var outerBuildRenderTree = new Mock<Action>();
-        var outerComponent = new TestComponent(() =>
+        component = new TestComponent()
         {
-            outerBuildRenderTree.Object();
-            innerComponent.ExecuteStateHasChanged();
-            innerComponent.ExecuteStateHasChanged();
-        });
+            BuildRenderTreeAction = buildRenderTreeAction.Object,
+            OnInitializedAction = onInitializedAction.Object,
+            OnInitializedAyncAction = onInitializedAyncAction.Object,
+            OnParametersSetAction = onParametersSetAction.Object,
+            OnParametersSetAsyncAction = onParametersSetAsyncAction.Object,
+            OnAfterRenderAction = onAfterRenderAction.Object,
+            OnAfterRenderAsyncAction = onAfterRenderAsyncAction.Object,
+            ShouldRenderAction = shouldRenderAction.Object,
+            DisableStateHasChangedAction = disableStateHasChangedAction.Object
+        };
 
-        var rendererFake = RendererFake.Create();
-        rendererFake.Attach(innerComponent);
-        rendererFake.Attach(outerComponent);
-
-        // act
-        await rendererFake.Dispatcher.InvokeAsync(
-            outerComponent.ExecuteStateHasChanged);
-
-        // assert
-        innerBuildRenderTree.Verify(obj => obj.Invoke(), Times.Once);
-        outerBuildRenderTree.Verify(obj => obj.Invoke(), Times.Once);
+        renderer = RendererFake.Create();
+        renderer.Attach(component);
     }
-    
-    internal class TestComponent(Action buildRenderTree) : LighthouseComponentBase
+
+    internal class TestComponent() : LighthouseComponentBase
     {
+        public required Action BuildRenderTreeAction { get; init; }
+        public required Action OnInitializedAction { get; init; }
+        public required Func<Task> OnInitializedAyncAction { get; init; }
+        public required Action OnParametersSetAction { get; init; }
+        public required Func<Task> OnParametersSetAsyncAction { get; init; }
+        public required Action<bool> OnAfterRenderAction { get; init; }
+        public required Func<bool, Task> OnAfterRenderAsyncAction { get; init; }
+        public required Func<bool> ShouldRenderAction { get; init; }
+        public required Func<bool> DisableStateHasChangedAction { get; init; }
+
         [Parameter]
         public object? Property1 { get; set; }
         [Parameter]
         public object? Property2 { get; set; }
 
-        public Task ExecuteInvokeAsync(Action action)
+        public RendererInfo GetRendererInfo()
         {
-            return InvokeAsync(action);
+            return RendererInfo;
         }
 
-        public void ExecuteStateHasChanged()
+        public ResourceAssetCollection GetAssets()
+        {
+            return Assets;
+        }
+
+        public IComponentRenderMode? GetAssignedRenderMode()
+        {
+            return AssignedRenderMode;
+        }
+
+        public void CallBaseStateHasChanged()
         {
             StateHasChanged();
         }
 
+        public void CallBaseEnforceStateHasChanged()
+        {
+            EnforceStateHasChanged();
+        }
+
+        public Task CallBaseInvokeAsync(Action workItem)
+        {
+            return InvokeAsync(workItem);
+        }
+
+        public Task CallBaseInvokeAsync(Func<Task> workItem)
+        {
+            return InvokeAsync(workItem);
+        }
+
+        public Task CallBaseDispatchExceptionAsync(Exception exception)
+        {
+            return DispatchExceptionAsync(exception);
+        }
+
+        public void CallBaseBuildRenderTree(RenderTreeBuilder renderTreeBuilder)
+        {
+            base.BuildRenderTree(renderTreeBuilder);
+        }
+
+        public void CallBaseOnInitialized()
+        {
+            base.OnInitialized();
+        }
+
+        public Task CallBaseOnInitializedAsync()
+        {
+            return base.OnInitializedAsync();
+        }
+
+        public void CallBaseOnParametersSet()
+        {
+            base.OnParametersSet();
+        }
+
+        public Task CallBaseParametersSetAsync()
+        {
+            return base.OnParametersSetAsync();
+        }
+
+        public void CallBaseOnAfterRender(bool firstRender)
+        {
+            base.OnAfterRender(firstRender);
+        }
+
+        public Task CallBaseOnAfterRenderAsync(bool firstRender)
+        {
+            return base.OnAfterRenderAsync(firstRender);
+        }
+
+        public bool CallBaseShouldRender()
+        {
+            return base.ShouldRender();
+        }
+
+        public bool CallBaseDisableStateHasChanged()
+        {
+            return base.DisableStateHasChanged();
+        }
+
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
-            base.BuildRenderTree(builder);
-            buildRenderTree();
+            BuildRenderTreeAction.Invoke();
+        }
+
+        protected override void OnInitialized()
+        {
+            OnInitializedAction.Invoke();
+        }
+
+        protected override Task OnInitializedAsync()
+        {
+             return OnInitializedAyncAction.Invoke();
+        }
+
+        protected override void OnParametersSet()
+        {
+            OnParametersSetAction.Invoke();
+        }
+
+        protected override Task OnParametersSetAsync()
+        {
+            return OnParametersSetAsyncAction.Invoke();
+        }
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            OnAfterRenderAction.Invoke(firstRender);
+        }
+
+        protected override Task OnAfterRenderAsync(bool firstRender)
+        {
+            return OnAfterRenderAsyncAction.Invoke(firstRender);
+        }
+
+        protected override bool ShouldRender()
+        {
+            return ShouldRenderAction.Invoke();
+        }
+
+        protected override bool DisableStateHasChanged()
+        {
+            return DisableStateHasChangedAction.Invoke();
         }
     }
 }

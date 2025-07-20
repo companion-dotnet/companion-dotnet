@@ -11,21 +11,50 @@ internal class RendererFake(
     ILoggerFactory loggerFactory) 
         : Renderer(serviceProvider, loggerFactory)
 {
+    protected override RendererInfo RendererInfo { get; } = new(nameof(RendererFake), true);
     public override Dispatcher Dispatcher { get; } = Dispatcher.CreateDefault();
+
+    public int GetComponentRenderModeCallCount { get; private set; }
+    public Exception? HandledException { get; private set; }
+
+    public bool ThrowExceptionOnRendering { get; set; }
 
     public void Attach(IComponent component)
     {
         AssignRootComponentId(component);
     }
 
+    public RendererInfo GetRendererInfo()
+    {
+        return RendererInfo;
+    }
+
+    public ResourceAssetCollection GetAssets()
+    {
+        return Assets;
+    }
     protected override void HandleException(Exception exception)
     {
-        throw exception;
+        HandledException = exception;
     }
 
     protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
     {
         return Task.CompletedTask;
+    }
+
+    protected override IComponentRenderMode? GetComponentRenderMode(IComponent component)
+    {
+        GetComponentRenderModeCallCount++;
+        return new ComponentRenderMode();
+    }
+
+    protected override void ProcessPendingRender()
+    {
+        if (ThrowExceptionOnRendering)
+            throw new InvalidOperationException();
+
+        base.ProcessPendingRender();
     }
 
     public static RendererFake Create()
@@ -34,5 +63,10 @@ internal class RendererFake(
         var loggerFactory = LoggerFactory.Create(builder => { });
         return new(serviceProvider.Object, loggerFactory);
     }
+
+    public class ComponentRenderMode : IComponentRenderMode
+    {
+
+    }
 }
-#pragma warning restore BL0006
+
