@@ -507,8 +507,6 @@ public partial class LighthouseComponentBaseTest
 
         taskCompletionSource2.SetResult();
         await task1;
-        await component.ExecuteInvokeAsync(
-            () => { });
 
         // assert
         Assert.Equal(6, value);
