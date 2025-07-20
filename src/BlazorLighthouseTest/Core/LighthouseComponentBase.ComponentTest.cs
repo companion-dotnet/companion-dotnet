@@ -1,5 +1,6 @@
 ﻿using BlazorLighthouseTest.Types;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 using Moq;
 
 namespace BlazorLighthouseTest.Core;
@@ -49,6 +50,24 @@ public partial class LighthouseComponentBaseTest
     }
     
     [Fact]
+    public void TestBuildRenderTree()
+    {
+        // arrange
+        var renderTreeBuilder = new RenderTreeBuilder();
+
+        // act
+        component.ExecuteBuildRenderTree(renderTreeBuilder);
+    }
+    
+    
+    [Fact]
+    public void TestOnInitialized()
+    {
+        // act
+        component.ExecuteOnInitialized();
+    }
+    
+    [Fact]
     public void TestOnInitializedAsync()
     {
         // act
@@ -59,6 +78,14 @@ public partial class LighthouseComponentBaseTest
     }
     
     [Fact]
+    public void TestOnParametersSet()
+    {
+        // act
+        component.ExecuteOnParametersSet();
+    }
+    
+    
+    [Fact]
     public void TestOnParametersSetAsync()
     {
         // act
@@ -67,6 +94,16 @@ public partial class LighthouseComponentBaseTest
         // assert
         Assert.Equal(Task.CompletedTask, result);
     }
+    
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TestOnAfterRender(bool firstRender)
+    {
+        // act
+        component.ExecuteOnAfterRender(firstRender);
+    }
+    
     
     [Theory]
     [InlineData(false)]

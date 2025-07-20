@@ -463,4 +463,57 @@ public partial class LighthouseComponentBaseTest
             obj => obj(),
             Times.Exactly(2));
     }
+
+    [Fact]
+    public async Task TestAleadyRenderedWhileWaitingForInvokeAsync()
+    {
+        // arrange
+        var recalculationCount = 0;
+        var value = 0;
+
+        var signal1 = new Signal<int>(1);
+        var signal2 = new Signal<int>(2);
+        var signal3 = new Signal<int>(3);
+
+        var taskCompletionSource1 = new TaskCompletionSource();
+        var taskCompletionSource2 = new TaskCompletionSource();
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                signal1.Get();
+                signal2.Get();
+                signal3.Get();
+
+                taskCompletionSource1.SetResult();
+                taskCompletionSource2.Task.Wait();
+
+                signal1.Set(4);
+                signal2.Set(5);
+
+                recalculationCount++;
+                value = signal3.Get();
+            });
+
+        // act
+        var task1 = Task.Run(
+            () => component.ExecuteInvokeAsync(
+                component.ExecuteStateHasChanged));
+
+        await taskCompletionSource1.Task;
+        taskCompletionSource1 = new();
+        signal3.Set(6);
+
+        taskCompletionSource2.SetResult();
+        await task1;
+        await component.ExecuteInvokeAsync(
+            () => { });
+
+        // assert
+        Assert.Equal(6, value);
+        buildRenderTreeAction.Verify(
+            obj => obj(),
+            Times.Exactly(2));
+    }
 }

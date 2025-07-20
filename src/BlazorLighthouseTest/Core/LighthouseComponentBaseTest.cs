@@ -108,14 +108,34 @@ public partial class LighthouseComponentBaseTest
             return DispatchExceptionAsync(exception);
         }
 
+        public void ExecuteBuildRenderTree(RenderTreeBuilder renderTreeBuilder)
+        {
+            base.BuildRenderTree(renderTreeBuilder);
+        }
+
+        public void ExecuteOnInitialized()
+        {
+            base.OnInitialized();
+        }
+
         public Task ExecuteOnInitializedAsync()
         {
             return base.OnInitializedAsync();
         }
 
+        public void ExecuteOnParametersSet()
+        {
+            base.OnParametersSet();
+        }
+
         public Task ExecuteOnParametersSetAsync()
         {
             return base.OnParametersSetAsync();
+        }
+
+        public void ExecuteOnAfterRender(bool firstRender)
+        {
+            base.OnAfterRender(firstRender);
         }
 
         public Task ExecuteOnAfterRenderAsync(bool firstRender)
