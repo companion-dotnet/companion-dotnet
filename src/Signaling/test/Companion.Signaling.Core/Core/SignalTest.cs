@@ -1,4 +1,4 @@
-﻿using BlazorLighthouse.Core;
+﻿using Companion.Signaling.Core.Core;
 
 namespace BlazorLighthouseTest.Core;
 

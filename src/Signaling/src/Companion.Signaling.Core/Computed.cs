@@ -1,7 +1,7 @@
-﻿using BlazorLighthouse.Internal;
-using BlazorLighthouse.Internal.Interfaces;
+﻿using Companion.Signaling.Core.Internal;
+using Companion.Signaling.Core.Internal.Interfaces;
 
-namespace BlazorLighthouse.Core;
+namespace Companion.Signaling.Core;
 
 /// <summary>
 /// Calculates values based on other signal values. Result gets updated when those values change

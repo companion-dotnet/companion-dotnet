@@ -1,6 +1,6 @@
-﻿using BlazorLighthouse.Internal;
+﻿using Companion.Signaling.Core.Internal;
 
-namespace BlazorLighthouse.Core;
+namespace Companion.Signaling.Core;
 
 /// <summary>
 /// Simple value store that allows subscription to changes

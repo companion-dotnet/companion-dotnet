@@ -1,6 +1,6 @@
-﻿using BlazorLighthouse.Internal.Interfaces;
+﻿using Companion.Signaling.Core.Internal.Interfaces;
 
-namespace BlazorLighthouse.Core;
+namespace Companion.Signaling.Core;
 
 /// <summary>
 /// Base class for all types of signals

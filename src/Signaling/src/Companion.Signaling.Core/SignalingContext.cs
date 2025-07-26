@@ -1,5 +1,6 @@
-﻿using BlazorLighthouse.Internal.Interfaces;
-namespace BlazorLighthouse.Core;
+﻿using Companion.Signaling.Core.Internal.Interfaces;
+
+namespace Companion.Signaling.Core;
 
 /// <summary>
 /// Defines a scope for the existance of signals. Required if objects with shorter lifetime subscribe to objects with a longer one.

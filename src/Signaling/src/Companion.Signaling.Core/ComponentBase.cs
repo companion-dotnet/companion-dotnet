@@ -1,15 +1,15 @@
-﻿using BlazorLighthouse.Internal;
-using BlazorLighthouse.Internal.Interfaces;
+﻿using Companion.Signaling.Core.Internal;
+using Companion.Signaling.Core.Internal.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System.Diagnostics;
 
-namespace BlazorLighthouse.Core;
+namespace Companion.Signaling.Core;
 
 /// <summary>
 /// Base class for components that autmatically tracks <see cref="ReadonlySignal{T}"/> accessed while rendering.
 /// </summary>
-public class LighthouseComponentBase 
+public class ComponentBase 
     : SignalingContext, IComponent, IRefreshable, IHandleEvent, IHandleAfterRender
 {
     private readonly RenderFragment renderFragment;
@@ -51,9 +51,9 @@ public class LighthouseComponentBase
     }
 
     /// <summary>
-    /// Constructs an instance of <see cref="LighthouseComponentBase"/>.
+    /// Constructs an instance of <see cref="ComponentBase"/>.
     /// </summary>
-    public LighthouseComponentBase()
+    public ComponentBase()
     {
         renderFragment = TrackAndBuildRenderTree;
         accessTracker = new(this, this);

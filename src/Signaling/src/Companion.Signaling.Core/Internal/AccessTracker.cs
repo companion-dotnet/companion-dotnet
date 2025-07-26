@@ -1,7 +1,6 @@
-﻿using BlazorLighthouse.Core;
-using BlazorLighthouse.Internal.Interfaces;
+﻿using Companion.Signaling.Core.Internal.Interfaces;
 
-namespace BlazorLighthouse.Internal;
+namespace Companion.Signaling.Core.Internal;
 
 internal class AccessTracker : IContextDisposable
 {

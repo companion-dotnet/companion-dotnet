@@ -1,8 +1,7 @@
-﻿using BlazorLighthouse.Core;
-using BlazorLighthouse.Internal.Interfaces;
+﻿using Companion.Signaling.Core.Internal.Interfaces;
 using System.Diagnostics.CodeAnalysis;
 
-namespace BlazorLighthouse.Internal;
+namespace Companion.Signaling.Core.Internal;
 
 internal static class Lighthouse
 {

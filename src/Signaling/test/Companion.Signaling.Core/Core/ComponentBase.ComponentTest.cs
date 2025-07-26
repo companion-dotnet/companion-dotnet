@@ -1,4 +1,4 @@
-﻿using BlazorLighthouseTest.Types;
+﻿using Companion.Signaling.Core.Types;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Moq;

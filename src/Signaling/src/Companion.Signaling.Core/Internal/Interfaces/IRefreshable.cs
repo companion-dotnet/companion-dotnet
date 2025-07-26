@@ -1,7 +1,6 @@
-﻿using BlazorLighthouse.Core;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
-namespace BlazorLighthouse.Internal.Interfaces;
+namespace Companion.Signaling.Core.Internal.Interfaces;
 
 internal interface IRefreshable
 {

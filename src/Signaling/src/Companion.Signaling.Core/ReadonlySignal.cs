@@ -1,4 +1,4 @@
-﻿namespace BlazorLighthouse.Core;
+﻿namespace Companion.Signaling.Core;
 
 /// <summary>
 /// Simple readonly value store that allows subscription to changes

@@ -14,7 +14,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\BlazorLighthouse\BlazorLighthouse.csproj" />
+		<ProjectReference Include="..\Signaling\src\Companion.Signaling.Core\Companion.Signaling.Core.csproj" />
 	</ItemGroup>
 
 </Project>

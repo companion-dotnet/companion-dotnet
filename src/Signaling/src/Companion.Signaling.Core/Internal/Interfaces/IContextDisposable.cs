@@ -1,4 +1,4 @@
-﻿namespace BlazorLighthouse.Internal.Interfaces;
+﻿namespace Companion.Signaling.Core.Internal.Interfaces;
 
 internal interface IContextDisposable
 {
