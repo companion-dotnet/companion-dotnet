@@ -51,7 +51,7 @@ jobs:
         dotnet-version: 10.x
     - name: Publish Nuget-Packages
       working-directory: ./src
-      run: dotnet pack --configuration Release --output ${{ env.NUGET_DIRECTORY }} /p:Version=0.0-preview1
+      run: dotnet pack --configuration Release --output ${{ env.NUGET_DIRECTORY }} --include-symbols /p:Version=0.0-preview1
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -76,4 +76,4 @@ jobs:
       - name: Install Nuget-Package-Validator
         run: dotnet tool update Meziantou.Framework.NuGetPackageValidation.Tool --global
       - name: Validate Nuget-Packages
-        run: for NUPKG_FILE in ${{ env.NUGET_DIRECTORY }}/*.nupkg; do meziantou.validate-nuget-package "$NUPKG_FILE"; done
+        run: for NUPKG_FILE in ${{ env.NUGET_DIRECTORY }}/*.symbols.nupkg; do meziantou.validate-nuget-package "$NUPKG_FILE"; done
