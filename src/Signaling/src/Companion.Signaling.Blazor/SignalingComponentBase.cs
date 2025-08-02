@@ -1,15 +1,16 @@
-﻿using Companion.Signaling.Core.Internal;
+﻿using Companion.Signaling.Core;
+using Companion.Signaling.Core.Internal;
 using Companion.Signaling.Core.Internal.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System.Diagnostics;
 
-namespace Companion.Signaling.Core;
+namespace Companion.Signaling.Blazor;
 
 /// <summary>
 /// Base class for components that autmatically tracks <see cref="ReadonlySignal{T}"/> accessed while rendering.
 /// </summary>
-public class ComponentBase 
+public class SignalingComponentBase 
     : SignalingContext, IComponent, IRefreshable, IHandleEvent, IHandleAfterRender
 {
     private readonly RenderFragment renderFragment;
@@ -51,9 +52,9 @@ public class ComponentBase
     }
 
     /// <summary>
-    /// Constructs an instance of <see cref="ComponentBase"/>.
+    /// Constructs an instance of <see cref="SignalingComponentBase"/>.
     /// </summary>
-    public ComponentBase()
+    public SignalingComponentBase()
     {
         renderFragment = TrackAndBuildRenderTree;
         accessTracker = new(this, this);

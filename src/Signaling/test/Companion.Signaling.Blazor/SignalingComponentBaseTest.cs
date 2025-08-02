@@ -1,12 +1,11 @@
-﻿using Companion.Signaling.Core.Core;
-using Companion.Signaling.Core.Types;
+﻿using Companion.Signaling.Blazor.Types;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Moq;
 
-namespace BlazorLighthouseTest.Core;
+namespace Companion.Signaling.Blazor;
 
-public partial class LighthouseComponentBaseTest
+public partial class SignalingComponentBaseTest
 {
     private readonly Mock<Action> buildRenderTreeAction;
     private readonly Mock<Action> onInitializedAction;
@@ -22,7 +21,7 @@ public partial class LighthouseComponentBaseTest
 
     private readonly RendererFake renderer;
 
-    public LighthouseComponentBaseTest()
+    public SignalingComponentBaseTest()
     {
         buildRenderTreeAction = new();
         onInitializedAction = new();
@@ -51,7 +50,7 @@ public partial class LighthouseComponentBaseTest
         renderer.Attach(component);
     }
 
-    internal class TestComponent() : LighthouseComponentBase
+    internal class TestComponent() : SignalingComponentBase
     {
         public required Action BuildRenderTreeAction { get; init; }
         public required Action OnInitializedAction { get; init; }

@@ -56,7 +56,7 @@ public sealed class Signal<T> : ReadonlySignal<T>
     private T GetSynchronized()
     {
         context.AssertIsNotDisposed();
-        Lighthouse.Register(this);
+        TrackingBeacon.Register(this);
         return value;
     }
 

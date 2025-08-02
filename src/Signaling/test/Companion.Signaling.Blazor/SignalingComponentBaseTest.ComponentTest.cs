@@ -1,11 +1,11 @@
-﻿using Companion.Signaling.Core.Types;
+﻿using Companion.Signaling.Blazor.Types;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Moq;
 
-namespace BlazorLighthouseTest.Core;
+namespace Companion.Signaling.Blazor;
 
-public partial class LighthouseComponentBaseTest
+public partial class SignalingComponentBaseTest
 {
     [Fact]
     public void TestRendererInfo()

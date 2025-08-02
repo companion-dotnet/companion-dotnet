@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace BlazorLighthouseTest.Types;
+namespace Companion.Signaling.Blazor.Types;
 
 #pragma warning disable BL0006
 internal class RendererFake(

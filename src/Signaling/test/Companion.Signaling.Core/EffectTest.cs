@@ -1,74 +1,47 @@
-﻿using Companion.Signaling.Core.Core;
+﻿namespace Companion.Signaling.Core;
 
-namespace BlazorLighthouseTest.Core;
-
-public class ComputedTest
+public class EffectTest
 {
     [Fact]
-    public void TestGet()
+    public void TestEffect()
     {
         // arrange
         var recalculationCount = 0;
+        var value = 0;
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount++;
-            return signal.Get();
+            value = signal.Get();
         });
-
-        // act
-        var value = computed.Get();
 
         // assert
         Assert.Equal(1, value);
         Assert.Equal(1, recalculationCount);
     }
-
-    [Fact]
-    public void TestValueAccessedMultipleTimes()
-    {
-        // arrange
-        var recalculationCount = 0;
-
-        var signal = new Signal<int>(1);
-
-        var computed = new Computed<int>(() =>
-        {
-            recalculationCount++;
-            return signal.Get();
-        });
-
-        // act
-        var value1 = computed.Get();
-        var value2 = computed.Get();
-
-        // assert
-        Assert.Equal(1, value1);
-        Assert.Equal(1, value2);
-        Assert.Equal(1, recalculationCount);
-    }
-
+    
     [Fact]
     public void TestValueChanged()
     {
         // arrange
         var recalculationCount = 0;
+        var value = 0;
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount++;
-            return signal.Get();
+            value = signal.Get();
         });
 
         // act
         signal.Set(2);
 
         // assert
-        Assert.Equal(2, computed.Get());
+        Assert.Equal(2, value);
         Assert.Equal(2, recalculationCount);
     }
 
@@ -77,20 +50,21 @@ public class ComputedTest
     {
         // arrange
         var recalculationCount = 0;
+        var value = 0;
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount++;
-            return signal.Get();
+            value = signal.Get();
         });
 
         // act
         signal.Set(1);
 
         // assert
-        Assert.Equal(1, computed.Get());
+        Assert.Equal(1, value);
         Assert.Equal(1, recalculationCount);
     }
 
@@ -99,13 +73,14 @@ public class ComputedTest
     {
         // arrange
         var recalculationCount = 0;
+        var value = 0;
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount++;
-            return signal.Get();
+            value = signal.Get();
         });
 
         // act
@@ -113,7 +88,7 @@ public class ComputedTest
         signal.Set(3);
 
         // assert
-        Assert.Equal(3, computed.Get());
+        Assert.Equal(3, value);
         Assert.Equal(3, recalculationCount);
     }
 
@@ -122,21 +97,22 @@ public class ComputedTest
     {
         // arrange
         var recalculationCount = 0;
+        var value = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount++;
-            return signal1.Get();
+            value = signal1.Get();
         });
 
         // act
         signal2.Set(3);
 
         // assert
-        Assert.Equal(1, computed.Get());
+        Assert.Equal(1, value);
         Assert.Equal(1, recalculationCount);
     }
 
@@ -145,16 +121,21 @@ public class ComputedTest
     {
         // arrange
         var recalculationCount = 0;
+        var value = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount++;
             if (signal1.Get() == 3)
-                return signal1.Get();
-            return signal2.Get();
+            {
+                value = signal1.Get();
+                return;
+            }
+
+            value = signal2.Get();
         });
 
         // act
@@ -162,7 +143,7 @@ public class ComputedTest
         signal2.Set(4);
 
         // assert
-        Assert.Equal(3, computed.Get());
+        Assert.Equal(3, value);
         Assert.Equal(2, recalculationCount);
     }
 
@@ -172,24 +153,21 @@ public class ComputedTest
         // arrange
         var recalculationCount1 = 0;
         var recalculationCount2 = 0;
+        var value = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed1 = new Computed<int>(() =>
-        {
+        var computed = new Computed<int>(() => {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        var computed2 = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount2++;
-            return computed1.Get() + signal2.Get();
+            value = computed.Get() + signal2.Get();
         });
-
-        // act
-        var value = computed2.Get();
 
         // assert
         Assert.Equal(3, value);
@@ -203,27 +181,27 @@ public class ComputedTest
         // arrange
         var recalculationCount1 = 0;
         var recalculationCount2 = 0;
+        var value = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed1 = new Computed<int>(() =>
-        {
+        var computed = new Computed<int>(() => {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        var computed2 = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount2++;
-            return computed1.Get() + signal2.Get();
+            value = computed.Get() + signal2.Get();
         });
 
         // act
         signal2.Set(3);
 
         // assert
-        Assert.Equal(4, computed2.Get());
+        Assert.Equal(4, value);
         Assert.Equal(1, recalculationCount1);
         Assert.Equal(2, recalculationCount2);
     }
@@ -234,27 +212,27 @@ public class ComputedTest
         // arrange
         var recalculationCount1 = 0;
         var recalculationCount2 = 0;
+        var value = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed1 = new Computed<int>(() =>
-        {
+        var computed = new Computed<int>(() => {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        var computed2 = new Computed<int>(() =>
+        _ = new Effect(() =>
         {
             recalculationCount2++;
-            return computed1.Get() + signal2.Get();
+            value = computed.Get() + signal2.Get();
         });
 
         // act
         signal1.Set(3);
 
         // assert
-        Assert.Equal(5, computed2.Get());
+        Assert.Equal(5, value);
         Assert.Equal(2, recalculationCount1);
         Assert.Equal(2, recalculationCount2);
     }
@@ -264,6 +242,7 @@ public class ComputedTest
     {
         // arrange
         var recalculationCount = 0;
+        var value = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
@@ -273,7 +252,7 @@ public class ComputedTest
         var taskCompletionSource2 = new TaskCompletionSource();
 
         taskCompletionSource1.SetResult();
-        var computed = new Computed<int>(() =>
+        var effect = new Effect(() =>
         {
             signal1.Get();
             signal2.Get();
@@ -283,7 +262,7 @@ public class ComputedTest
             taskCompletionSource1.Task.Wait();
 
             recalculationCount++;
-            return signal3.Get();
+            value = signal3.Get();
         });
 
         // act
@@ -294,7 +273,7 @@ public class ComputedTest
         await taskCompletionSource2.Task;
 
         var setterTask2 = Task.Run(() => signal2.Set(5));
-        while (!computed!.IsEvaluationQueued)
+        while (!effect!.IsRunQueued)
             ;
 
         signal3.Set(6);
@@ -306,7 +285,7 @@ public class ComputedTest
         await setterTask2;
 
         // assert
-        Assert.Equal(6, computed.Get());
+        Assert.Equal(6, value);
         Assert.Equal(3, recalculationCount);
     }
 }

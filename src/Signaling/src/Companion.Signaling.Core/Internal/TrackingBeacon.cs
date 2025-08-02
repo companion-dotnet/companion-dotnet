@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Companion.Signaling.Core.Internal;
 
-internal static class Lighthouse
+internal static class TrackingBeacon
 {
     [ThreadStatic]
     private static Stack<TrackingToken>? trackingTokens;

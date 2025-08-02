@@ -58,9 +58,9 @@ internal class AccessTracker : IContextDisposable
         Untrack();
         context.AssertIsNotDisposed();
 
-        Lighthouse.Push(refreshable);
+        TrackingBeacon.Push(refreshable);
         var value = func();
-        signals = Lighthouse.Pop();
+        signals = TrackingBeacon.Pop();
 
         return value;
     }

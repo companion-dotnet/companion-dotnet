@@ -1,9 +1,9 @@
-﻿using Companion.Signaling.Core.Core;
+﻿using Companion.Signaling.Core;
 using Moq;
 
-namespace BlazorLighthouseTest.Core;
+namespace Companion.Signaling.Blazor;
 
-public partial class LighthouseComponentBaseTest
+public partial class SignalingComponentBaseTest
 {
     [Fact]
     public async Task TestValueChanged()

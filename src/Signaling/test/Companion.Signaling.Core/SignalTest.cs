@@ -1,6 +1,4 @@
-﻿using Companion.Signaling.Core.Core;
-
-namespace BlazorLighthouseTest.Core;
+﻿namespace Companion.Signaling.Core;
 
 public class SignalTest
 {
