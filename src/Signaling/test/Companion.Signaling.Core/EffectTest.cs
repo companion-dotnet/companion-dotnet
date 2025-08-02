@@ -1,4 +1,4 @@
-﻿namespace Companion.Signaling.Core;
+﻿namespace Companion.Signaling.Core.Test;
 
 public class EffectTest
 {

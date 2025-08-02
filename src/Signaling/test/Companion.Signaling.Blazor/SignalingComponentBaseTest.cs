@@ -1,9 +1,9 @@
-﻿using Companion.Signaling.Blazor.Types;
+﻿using Companion.Signaling.Blazor.Test.Types;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Moq;
 
-namespace Companion.Signaling.Blazor;
+namespace Companion.Signaling.Blazor.Test;
 
 public partial class SignalingComponentBaseTest
 {

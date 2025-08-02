@@ -1,7 +1,7 @@
 ﻿using Companion.Signaling.Core;
 using Moq;
 
-namespace Companion.Signaling.Blazor;
+namespace Companion.Signaling.Blazor.Test;
 
 public partial class SignalingComponentBaseTest
 {
