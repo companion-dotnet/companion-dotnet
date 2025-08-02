@@ -22,7 +22,7 @@
 		<Description>Companion .NET Signaling provides an API for change detection and therefore allows performing recalculations only when it is actually necessary.</Description>
 		<PackageProjectUrl>https://github.com/companion-dotnet/companion-dotnet</PackageProjectUrl>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<Deterministic>true</Deterministic>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>logo.png</PackageIcon>
 
