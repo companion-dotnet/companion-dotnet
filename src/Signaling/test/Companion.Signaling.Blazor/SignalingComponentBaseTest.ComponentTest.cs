@@ -615,7 +615,6 @@ public partial class SignalingComponentBaseTest
         component.CallBaseBuildRenderTree(renderTreeBuilder);
     }
 
-
     [Fact]
     public void TestOnInitialized()
     {
@@ -640,7 +639,6 @@ public partial class SignalingComponentBaseTest
         component.CallBaseOnParametersSet();
     }
 
-
     [Fact]
     public void TestOnParametersSetAsync()
     {
@@ -659,7 +657,6 @@ public partial class SignalingComponentBaseTest
         // act
         component.CallBaseOnAfterRender(firstRender);
     }
-
 
     [Theory]
     [InlineData(false)]
