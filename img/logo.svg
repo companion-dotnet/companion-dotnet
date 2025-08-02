@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 450" width="500px" height="500px">
-  <text style="fill: rgb(201, 102, 22); font-family: &quot;Arial Rounded MT&quot;; font-size: 500px; white-space: pre;" x="15" y="365">B</text>
-  <text style="fill: rgb(212, 174, 43); font-family: &quot;Arial Rounded MT&quot;; font-size: 500px; white-space: pre;" x="105" y="445">L</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="150px" height="150px">
+  <defs>
+    <linearGradient id="gradient" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#00beff" />
+      <stop offset="100%" stop-color="#00ffa3" />
+    </linearGradient>
+  </defs>
+  
+  <path fill="url(#gradient)" d="M75 75m-75,0a75,75,0 1,0 150,0a 75,75 0 1,0 -150,0zM107 44m-25,0a25,25,0 0,1 50,0a 25,25 0 0,1 -50,0z"/>
 </svg>
