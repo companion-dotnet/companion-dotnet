@@ -26,8 +26,3 @@ Computed<int> computed = new Computed<int>(context, () => {
 // Dispose all elements created within this context
 context.Dispose();
 ```
-
-<br/>
-<p align="center">
-    <img src="../img/logo.svg" width="200px" alt="Logo">
-</p>

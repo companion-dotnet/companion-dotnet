@@ -43,8 +43,3 @@ signal.Set(1);
 // Access computed value
 int value = computed.Get();
 ```
-
-<br/>
-<p align="center">
-    <img src="../img/logo.svg" width="200px" alt="Logo">
-</p>

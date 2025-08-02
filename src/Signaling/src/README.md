@@ -1,5 +1,3 @@
-> This project is undergoing major restructuring before the first official release. The currently available versions are only experimental and mainly used for detailed testing. Do not use it for real projects in any case.
-
 # Companion .NET Signaling
 *Companion .NET Signaling* provides an API for change detection, therefore allowing recalculations only when it is actually necessary. The concept is pretty much the same as the signals that are available in [Angular](https://angular.dev/guide/signals).
 
