@@ -18,8 +18,3 @@ Value: @Value.Get()<br/>
     }
 }
 ```
-
-<br/>
-<p align="center">
-    <img src="../img/logo.svg" width="200px" alt="Logo">
-</p>
