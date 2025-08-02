@@ -1,5 +1,5 @@
-# Basic Concepts of Blazor Lighthouse
-**Signals** and **Effects** are the main building blocks of *Blazor Lighthouse*. **Signals** provide the value stores which can later be used in **Computed Values** and **Effects**.
+# Basic Concepts of Companion .NET
+**Signals** and **Effects** are the main building blocks of *Companion .NET*. **Signals** provide the value stores which can later be used in **Computed Values** and **Effects**.
 
 ## Signals
 **Signals** are simple value stores. They require an initial value, which can be changed later. Any access inside of an **Effect, Computed Value or Component** leads to an subscription (this behavior can not be nested).

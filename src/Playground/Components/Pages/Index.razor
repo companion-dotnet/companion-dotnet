@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-@inherits LighthouseComponentBase
+@inherits SignalingComponentBase
 
 <button @onclick="IncreaseCounter">
     Increase Counter
@@ -12,6 +12,11 @@
 
 @code{
     public Signal<int> Counter { get; } = new(0);
+
+    protected override bool DisableStateHasChanged()
+    {
+        return true;
+    }
 
     private void IncreaseCounter()
     {
