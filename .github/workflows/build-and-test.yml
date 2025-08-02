@@ -26,10 +26,17 @@ jobs:
     - name: Build and Test
       working-directory: ./src
       run: dotnet test --verbosity normal --logger trx --collect:"XPlat Code Coverage"
-    - name: Verify Code Coverage
+    - name: Install ReportGenerator
+      run: dotnet tool update dotnet-reportgenerator-globaltool --global
+    - name: Combine Cobertura Files
+      run: reportgenerator \
+            -reports:"**/TestResults/**/coverage.cobertura.xml" \
+            -targetdir:"./TestResults" \
+            -reporttypes:Cobertura
+    - name: Verify Code Coverage    
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: "**/*Cobertura.xml"
+        filename: "./TestResults/*Cobertura.xml"
         fail_below_min: true 
         thresholds: "100 100"
 
