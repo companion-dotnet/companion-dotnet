@@ -14,8 +14,3 @@ Currently, the project is only a proof of concept. Mainly the Blazor integration
  - [Basic Concepts of *Companion .NET*](docs/BasicConcepts.md)
  - [Pitfalls of Memory Leaks](docs/MemoryLeaks.md)
  - [Usage with Blazor Components](docs/UsageWithBlazor.md)
-
-<br/>
-<p align="center">
-    <img src="img/logo.svg" width="200px" alt="Logo">
-</p>
