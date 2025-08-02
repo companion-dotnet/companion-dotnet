@@ -79,4 +79,6 @@ jobs:
       - name: Install Nuget-Package-Validator
         run: dotnet tool update Meziantou.Framework.NuGetPackageValidation.Tool --global
       - name: Validate Nuget-Packages
-        run: for NUPKG_FILE in ${{ env.NUGET_DIRECTORY }}/*.nupkg; do meziantou.validate-nuget-package "$NUPKG_FILE"; done
+        run: for NUPKG_FILE in ${{ env.NUGET_DIRECTORY }}/*.nupkg; do \
+              meziantou.validate-nuget-package "$NUPKG_FILE"; \
+             done
