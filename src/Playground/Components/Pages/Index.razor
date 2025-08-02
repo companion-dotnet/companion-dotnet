@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Companion.Signaling.Core
 
 @inherits SignalingComponentBase
 
@@ -13,6 +12,11 @@
 
 @code{
     public Signal<int> Counter { get; } = new(0);
+
+    protected override bool DisableStateHasChanged()
+    {
+        return true;
+    }
 
     private void IncreaseCounter()
     {
