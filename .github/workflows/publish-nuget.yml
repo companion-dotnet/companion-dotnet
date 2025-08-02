@@ -28,10 +28,7 @@ jobs:
     - name: Install ReportGenerator
       run: dotnet tool update dotnet-reportgenerator-globaltool --global
     - name: Combine Cobertura Files
-      run: reportgenerator \
-            -reports:"**/TestResults/**/coverage.cobertura.xml" \
-            -targetdir:"./TestResults" \
-            -reporttypes:Cobertura
+      run: reportgenerator -reports:"**/TestResults/**/coverage.cobertura.xml" -targetdir:"./TestResults" -reporttypes:Cobertura
     - name: Verify Code Coverage    
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
@@ -78,9 +75,7 @@ jobs:
       - name: Install Nuget-Package-Validator
         run: dotnet tool update Meziantou.Framework.NuGetPackageValidation.Tool --global
       - name: Validate Nuget-Packages
-        run: for NUPKG_FILE in ${{ env.NUGET_DIRECTORY }}/*.nupkg; do \
-              meziantou.validate-nuget-package "$NUPKG_FILE"; \
-             done
+        run: for NUPKG_FILE in ${{ env.NUGET_DIRECTORY }}/*.nupkg; do meziantou.validate-nuget-package "$NUPKG_FILE"; done
 
   deploy:
     runs-on: ubuntu-latest
