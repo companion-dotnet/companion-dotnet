@@ -10,19 +10,6 @@ namespace Companion.Signaling.Benchmark;
 
 public class SignalingBenchmark
 {
-    private readonly HtmlRenderer htmlRenderer;
-
-    public SignalingBenchmark()
-    {
-        var services = new ServiceCollection();
-        services.AddLogging();
-
-        var serviceProvider = services.BuildServiceProvider();
-        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        htmlRenderer = new HtmlRenderer(serviceProvider, loggerFactory);
-    }
-
     [Benchmark]
     public void AccessVariable()
     {
@@ -55,6 +42,13 @@ public class SignalingBenchmark
             { nameof(DefaultComponent.Value), "value" }
         });
 
+        var services = new ServiceCollection();
+        services.AddLogging();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+        await using var htmlRenderer = new HtmlRenderer(serviceProvider, loggerFactory);
         await htmlRenderer.Dispatcher.InvokeAsync(async () =>
             await htmlRenderer.RenderComponentAsync<DefaultComponent>(parameterView));
     }
@@ -67,6 +61,13 @@ public class SignalingBenchmark
             { nameof(SignalingComponent.Value), new Signal<string>("value") }
         });
 
+        var services = new ServiceCollection();
+        services.AddLogging();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+        await using var htmlRenderer = new HtmlRenderer(serviceProvider, loggerFactory);
         await htmlRenderer.Dispatcher.InvokeAsync(async () =>
             await htmlRenderer.RenderComponentAsync<SignalingComponent>(parameterView));
     }
