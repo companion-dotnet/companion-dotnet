@@ -4,12 +4,22 @@ using Companion.Signaling.Core;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Companion.Signaling.Benchmark;
 
 public class SignalingBenchmark
 {
+    private readonly IServiceProvider serviceProvider;
+
+    public SignalingBenchmark()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddTransient<HtmlRenderer>();
+
+        serviceProvider = services.BuildServiceProvider();
+    }
+
     [Benchmark]
     public void AccessVariable()
     {
@@ -42,13 +52,7 @@ public class SignalingBenchmark
             { nameof(DefaultComponent.Value), "value" }
         });
 
-        var services = new ServiceCollection();
-        services.AddLogging();
-
-        var serviceProvider = services.BuildServiceProvider();
-        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        await using var htmlRenderer = new HtmlRenderer(serviceProvider, loggerFactory);
+        await using var htmlRenderer = serviceProvider.GetRequiredService<HtmlRenderer>();
         await htmlRenderer.Dispatcher.InvokeAsync(async () =>
             await htmlRenderer.RenderComponentAsync<DefaultComponent>(parameterView));
     }
@@ -58,16 +62,10 @@ public class SignalingBenchmark
     {
         var parameterView = ParameterView.FromDictionary(new Dictionary<string, object?>()
         {
-            { nameof(SignalingComponent.Value), new Signal<string>("value") }
+            { nameof(DefaultComponent.Value), new Signal<string>("value") }
         });
 
-        var services = new ServiceCollection();
-        services.AddLogging();
-
-        var serviceProvider = services.BuildServiceProvider();
-        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        await using var htmlRenderer = new HtmlRenderer(serviceProvider, loggerFactory);
+        await using var htmlRenderer = serviceProvider.GetRequiredService<HtmlRenderer>();
         await htmlRenderer.Dispatcher.InvokeAsync(async () =>
             await htmlRenderer.RenderComponentAsync<SignalingComponent>(parameterView));
     }
