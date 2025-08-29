@@ -1,0 +1,16 @@
+@using Companion.Signaling.Blazor
+@using Companion.Signaling.Core
+
+@inherits SignalingComponentBase
+
+@Value.Get()
+
+@code {
+    [Parameter]
+    public required Signal<string> Value { get; init; }
+
+    protected override bool DisableStateHasChanged()
+    {
+        return true;
+    }
+}
