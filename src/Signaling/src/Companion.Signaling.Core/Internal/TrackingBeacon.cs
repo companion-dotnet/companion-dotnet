@@ -21,11 +21,11 @@ internal static class TrackingBeacon
             return;
 
         var trackingToken = trackingTokens.Peek();
-        trackingToken.Signals.Add(signal);
+        trackingToken.Signals.Add(new(signal));
         signal.RegisterRefreshable(trackingToken.Refreshable);
     }
 
-    public static HashSet<AbstractSignal> Pop()
+    public static HashSet<WeakReference<AbstractSignal>> Pop()
     {
         InitializeTrackingTokens();
 
@@ -45,6 +45,6 @@ internal static class TrackingBeacon
     private class TrackingToken(IRefreshable refreshable)
     {
         public IRefreshable Refreshable { get; } = refreshable;
-        public HashSet<AbstractSignal> Signals { get; } = [];
+        public HashSet<WeakReference<AbstractSignal>> Signals { get; } = [];
     }
 }

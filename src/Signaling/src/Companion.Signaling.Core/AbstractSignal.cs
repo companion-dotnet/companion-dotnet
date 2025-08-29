@@ -12,7 +12,7 @@ public abstract class AbstractSignal : IContextDisposable
     /// </summary>
     protected readonly SignalingContext context;
 
-    private HashSet<IRefreshable> refreshables = [];
+    private HashSet<WeakReference<IRefreshable>> refreshables = [];
 
     internal AbstractSignal(SignalingContext context)
     {
@@ -41,26 +41,34 @@ public abstract class AbstractSignal : IContextDisposable
 
     internal void UnregisterRefreshable(IRefreshable refreshable)
     {
-        refreshables.Remove(refreshable);
+        refreshables.RemoveWhere(
+            weakReference => weakReference.TryGetTarget(out var target)
+                && ReferenceEquals(target, refreshable));
     }
-    
+
     private void RegisterRefreshableSynchronized(IRefreshable refreshable)
     {
         context.AssertIsNotDisposed();
-        refreshables.Add(refreshable);
+        refreshables.Add(new(refreshable));
     }
 
     void IContextDisposable.Dispose()
     {
-        foreach (var refreshable in refreshables)
-            refreshable.Dispose(this);
+        foreach (var weakReference in refreshables)
+        {
+            if (weakReference.TryGetTarget(out var refreshable))
+                refreshable.Dispose(this);
+        }
 
         refreshables.Clear();
     } 
 
-    private static void Refresh(ISet<IRefreshable> refreshables)
+    private static void Refresh(ISet<WeakReference<IRefreshable>> refreshables)
     {
-        foreach (var refreshable in refreshables)
-            refreshable.Refresh();
+        foreach (var weakReference in refreshables)
+        {
+            if (weakReference.TryGetTarget(out var refreshable))
+                refreshable.Refresh();
+        }
     }
 }
