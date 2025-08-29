@@ -21,14 +21,6 @@ public class SignalingBenchmark
     }
 
     [Benchmark]
-    public void AccessVariable()
-    {
-        var x = 0;
-        var y = x;
-        _ = y;
-    }
-
-    [Benchmark]
     public void AccessSignal()
     {
         var x = new Signal<int>(0);
