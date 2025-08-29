@@ -15,7 +15,7 @@ public partial class SignalingComponentBaseTest
     private readonly Mock<Action<bool>> onAfterRenderAction;
     private readonly Mock<Func<bool, Task>> onAfterRenderAsyncAction;
     private readonly Mock<Func<bool>> shouldRenderAction;
-    private readonly Mock<Func<bool>> disableStateHasChangedAction;
+    private readonly Mock<Func<bool>> preventDefaultRenderingAction;
 
     private readonly TestComponent component;
 
@@ -31,7 +31,7 @@ public partial class SignalingComponentBaseTest
         onAfterRenderAction = new();
         onAfterRenderAsyncAction = new();
         shouldRenderAction = new();
-        disableStateHasChangedAction = new();
+        preventDefaultRenderingAction = new();
 
         component = new TestComponent()
         {
@@ -43,7 +43,7 @@ public partial class SignalingComponentBaseTest
             OnAfterRenderAction = onAfterRenderAction.Object,
             OnAfterRenderAsyncAction = onAfterRenderAsyncAction.Object,
             ShouldRenderAction = shouldRenderAction.Object,
-            DisableStateHasChangedAction = disableStateHasChangedAction.Object
+            PreventDefaultRenderingAction = preventDefaultRenderingAction.Object
         };
 
         renderer = RendererFake.Create();
@@ -60,7 +60,7 @@ public partial class SignalingComponentBaseTest
         public required Action<bool> OnAfterRenderAction { get; init; }
         public required Func<bool, Task> OnAfterRenderAsyncAction { get; init; }
         public required Func<bool> ShouldRenderAction { get; init; }
-        public required Func<bool> DisableStateHasChangedAction { get; init; }
+        public required Func<bool> PreventDefaultRenderingAction { get; init; }
 
         [Parameter]
         public object? Property1 { get; set; }
@@ -147,9 +147,9 @@ public partial class SignalingComponentBaseTest
             return base.ShouldRender();
         }
 
-        public bool CallBaseDisableStateHasChanged()
+        public bool CallBasePreventDefaultRendering()
         {
-            return base.DisableStateHasChanged();
+            return base.PreventDefaultRendering();
         }
 
         protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -192,9 +192,9 @@ public partial class SignalingComponentBaseTest
             return ShouldRenderAction.Invoke();
         }
 
-        protected override bool DisableStateHasChanged()
+        protected override bool PreventDefaultRendering()
         {
-            return DisableStateHasChangedAction.Invoke();
+            return PreventDefaultRenderingAction.Invoke();
         }
     }
 }

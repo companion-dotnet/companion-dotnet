@@ -13,7 +13,7 @@
 @code{
     public Signal<int> Counter { get; } = new(0);
 
-    protected override bool DisableStateHasChanged()
+    protected override bool PreventDefaultRendering()
     {
         return true;
     }

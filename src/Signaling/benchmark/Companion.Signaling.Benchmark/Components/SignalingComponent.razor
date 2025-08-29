@@ -9,7 +9,7 @@
     [Parameter]
     public required Signal<string> Value { get; init; }
 
-    protected override bool DisableStateHasChanged()
+    protected override bool PreventDefaultRendering()
     {
         return true;
     }

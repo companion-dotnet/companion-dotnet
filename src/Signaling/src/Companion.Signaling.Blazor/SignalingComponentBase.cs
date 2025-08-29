@@ -105,11 +105,11 @@ public class SignalingComponentBase
     /// <summary>
     /// Notifies the component that its state has changed. When applicable, this will
     /// cause the component to be re-rendered. This behavior can be disabled by overriding
-    /// <see cref="DisableStateHasChanged"/>.
+    /// <see cref="PreventDefaultRendering"/>.
     /// </summary>
     protected void StateHasChanged()
     {
-        if (DisableStateHasChanged() && !hasNeverRendered)
+        if (PreventDefaultRendering() && !hasNeverRendered)
             return;
 
         EnforceStateHasChanged();
@@ -118,7 +118,7 @@ public class SignalingComponentBase
     /// <summary>
     /// Notifies the component that its state has changed. When applicable, this will
     /// cause the component to be re-rendered. This behavior is always enforced, 
-    /// regardless of the return value of <see cref="DisableStateHasChanged"/>.
+    /// regardless of the return value of <see cref="PreventDefaultRendering"/>.
     /// </summary>
     protected void EnforceStateHasChanged()
     {
@@ -270,12 +270,12 @@ public class SignalingComponentBase
     }
 
     /// <summary>
-    /// Returns a flag to indicate when state has changed should be called.
+    /// Returns a flag to indicate whether only signaling can trigger rendering.
     /// </summary>
     /// <returns></returns>
-    protected virtual bool DisableStateHasChanged()
+    protected virtual bool PreventDefaultRendering()
     {
-        return false;
+        return true;
     }
 
     private void TrackAndBuildRenderTree(RenderTreeBuilder builder)
