@@ -15,7 +15,6 @@ public class SignalingComponentBase
 {
     private readonly RenderFragment renderFragment;
     private readonly AccessTracker accessTracker;
-    private readonly Lock lockObject = new();
 
     private RenderHandle renderHandle;
     private (IComponentRenderMode? mode, bool cached) renderMode;
@@ -387,28 +386,16 @@ public class SignalingComponentBase
     {
         try
         {
-            var canQueueRendering = CanQueueRendering();
-            if (!canQueueRendering)
+            if (HasPendingQueuedRender)
                 return;
 
+            HasPendingQueuedRender = true;
             renderHandle.Render(renderFragment);
         }
         catch
         {
             HasPendingQueuedRender = false;
             throw;
-        }
-    }
-
-    private bool CanQueueRendering()
-    {
-        lock (lockObject)
-        {
-            if (HasPendingQueuedRender)
-                return false;
-
-            HasPendingQueuedRender = true;
-            return true;
         }
     }
 
