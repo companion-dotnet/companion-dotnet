@@ -687,7 +687,7 @@ public partial class SignalingComponentBaseTest
         var result = component.CallBasePreventDefaultRendering();
 
         // assert
-        Assert.False(result);
+        Assert.True(result);
     }
 
     [Theory]
