@@ -7,7 +7,7 @@ namespace Companion.Signaling.Core;
 /// </summary>
 public abstract class AbstractSignal : IContextDisposable
 {
-    private readonly Lock lockObject = new();
+    private readonly Lock refreshablesLock = new();
 
     /// <summary>
     /// Signaling context for the current signal
@@ -42,13 +42,14 @@ public abstract class AbstractSignal : IContextDisposable
     internal void UnregisterRefreshable(IRefreshable refreshable)
     {
         refreshables.RemoveWhere(
-            weakReference => weakReference.TryGetTarget(out var target)
-                && ReferenceEquals(target, refreshable));
+            weakRefreshable => weakRefreshable
+                .TryGetTarget(out var referencedRefreshable)
+                    && ReferenceEquals(referencedRefreshable, refreshable));
     }
 
     private ISet<WeakReference<IRefreshable>> GetRefreshables()
     {
-        lock (lockObject)
+        lock (refreshablesLock)
         {
             var currentRefreshables = refreshables;
             refreshables = [];
@@ -64,9 +65,9 @@ public abstract class AbstractSignal : IContextDisposable
 
     void IContextDisposable.Dispose()
     {
-        foreach (var weakReference in refreshables)
+        foreach (var weakRefreshable in refreshables)
         {
-            if (weakReference.TryGetTarget(out var refreshable))
+            if (weakRefreshable.TryGetTarget(out var refreshable))
                 refreshable.Dispose(this);
         }
 
@@ -75,9 +76,9 @@ public abstract class AbstractSignal : IContextDisposable
 
     private static void Refresh(ISet<WeakReference<IRefreshable>> refreshables)
     {
-        foreach (var weakReference in refreshables)
+        foreach (var weakRefreshable in refreshables)
         {
-            if (weakReference.TryGetTarget(out var refreshable))
+            if (weakRefreshable.TryGetTarget(out var refreshable))
                 refreshable.Refresh();
         }
     }

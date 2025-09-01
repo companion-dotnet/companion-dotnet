@@ -43,9 +43,9 @@ public class SignalingContext : IDisposable
     {
         isDisposed = true;
         contextDisposables.ForEach(
-            weakReference =>
+            weakContextDisposable =>
             {
-                if (weakReference.TryGetTarget(out var contextDisposable))
+                if (weakContextDisposable.TryGetTarget(out var contextDisposable))
                     contextDisposable.Dispose();
             });
     }

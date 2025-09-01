@@ -10,7 +10,7 @@ public sealed class Effect : IRefreshable
 {
     private readonly Action callback;
     private readonly AccessTracker accessTracker;
-    private readonly Lock lockObject = new();
+    private readonly Lock isRunQueuedLock = new();
 
     internal bool IsRunQueued { get; private set; } = false;
 
@@ -46,7 +46,7 @@ public sealed class Effect : IRefreshable
 
     private bool SetRunQueued()
     {
-        lock (lockObject)
+        lock (isRunQueuedLock)
         {
             return SetRunQueuedSync();
         }

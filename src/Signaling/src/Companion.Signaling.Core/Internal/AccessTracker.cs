@@ -6,7 +6,7 @@ internal class AccessTracker : IContextDisposable
 {
     private readonly IRefreshable refreshable;
     private readonly SignalingContext context;
-    private readonly Lock lockObject = new();
+    private readonly Lock signalsLock = new();
 
     private HashSet<WeakReference<AbstractSignal>> signals = [];
 
@@ -29,7 +29,7 @@ internal class AccessTracker : IContextDisposable
     
     public T Track<T>(Func<T> func)
     {
-        lock (lockObject)
+        lock (signalsLock)
         {
             return TrackSynchronized(func);
         }
@@ -37,7 +37,7 @@ internal class AccessTracker : IContextDisposable
 
     public void Untrack(AbstractSignal signal)
     {
-        lock (lockObject)
+        lock (signalsLock)
         {
             UntrackSynchronized(signal);
         }
@@ -45,7 +45,7 @@ internal class AccessTracker : IContextDisposable
 
     public void Dispose()
     {
-        lock (lockObject)
+        lock (signalsLock)
         {
             Untrack();
         }
@@ -53,9 +53,9 @@ internal class AccessTracker : IContextDisposable
 
     private void Untrack()
     {
-        foreach (var weakReference in signals)
+        foreach (var weakSignal in signals)
         {
-            if (weakReference.TryGetTarget(out var signal))
+            if (weakSignal.TryGetTarget(out var signal))
                 signal.UnregisterRefreshable(refreshable);
         }
     }
@@ -75,7 +75,8 @@ internal class AccessTracker : IContextDisposable
     private void UntrackSynchronized(AbstractSignal signal)
     {
         signals.RemoveWhere(
-            weakReference => weakReference.TryGetTarget(out var target)
-                && ReferenceEquals(target, signal));
+            weakSignal => weakSignal
+                .TryGetTarget(out var referencedSignal)
+                    && ReferenceEquals(referencedSignal, signal));
     }
 }
