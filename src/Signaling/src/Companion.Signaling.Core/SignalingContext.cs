@@ -25,11 +25,12 @@ public class SignalingContext : IDisposable
         }
     }
 
-    internal void RegisterContextDisposable(IContextDisposable accessTracker)
+    internal void RegisterContextDisposable(
+        WeakReference<IContextDisposable> weakAccessTracker)
     {
         lock (LockObject) 
         {
-            RegisterContextDisposableSynchronized(accessTracker);
+            RegisterContextDisposableSynchronized(weakAccessTracker);
         }
     }
 
@@ -50,9 +51,10 @@ public class SignalingContext : IDisposable
             });
     }
 
-    private void RegisterContextDisposableSynchronized(IContextDisposable contextDisposable)
+    private void RegisterContextDisposableSynchronized(
+        WeakReference<IContextDisposable> weakContextDisposable)
     {
         AssertIsNotDisposed();
-        contextDisposables.Add(new(contextDisposable));
+        contextDisposables.Add(weakContextDisposable);
     }
 }

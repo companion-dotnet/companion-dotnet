@@ -24,6 +24,10 @@ public class SignalingComponentBase
     private bool hasNeverRendered = true;
     private bool hasCalledOnAfterRender;
 
+    private WeakReference<IRefreshable>? weakReference;
+    WeakReference<IRefreshable> IRefreshable.WeakReference
+        => weakReference ??= new(this);
+
     internal bool HasPendingQueuedRender { get; private set; }
 
     /// <summary>
@@ -423,9 +427,9 @@ public class SignalingComponentBase
         InvokeAsync(() => QueueRenderingIfNecessary(renderId));
     }
 
-    void IRefreshable.Dispose(AbstractSignal signal)
+    void IRefreshable.Dispose(WeakReference<AbstractSignal> weakSignal)
     {
-        accessTracker.Untrack(signal);
+        accessTracker.Untrack(weakSignal);
     }
 
     Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg)

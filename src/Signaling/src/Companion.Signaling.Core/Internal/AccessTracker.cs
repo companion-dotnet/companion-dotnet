@@ -15,7 +15,7 @@ internal class AccessTracker : IContextDisposable
         this.refreshable = refreshable;
         this.context = context ?? new();
 
-        context?.RegisterContextDisposable(this);
+        context?.RegisterContextDisposable(new(this));
     }
 
     public void Track(Action action)
@@ -35,11 +35,12 @@ internal class AccessTracker : IContextDisposable
         }
     }
 
-    public void Untrack(AbstractSignal signal)
+    public void Untrack(
+        WeakReference<AbstractSignal> weakSignal)
     {
         lock (signalsLock)
         {
-            UntrackSynchronized(signal);
+            UntrackSynchronized(weakSignal);
         }
     }
 
@@ -56,7 +57,7 @@ internal class AccessTracker : IContextDisposable
         foreach (var weakSignal in signals)
         {
             if (weakSignal.TryGetTarget(out var signal))
-                signal.UnregisterRefreshable(refreshable);
+                signal.UnregisterRefreshable(refreshable.WeakReference);
         }
     }
 
@@ -65,18 +66,16 @@ internal class AccessTracker : IContextDisposable
         Untrack();
         context.AssertIsNotDisposed();
 
-        TrackingBeacon.Push(refreshable);
+        TrackingBeacon.Push(refreshable.WeakReference);
         var value = func();
         signals = TrackingBeacon.Pop();
 
         return value;
     }
 
-    private void UntrackSynchronized(AbstractSignal signal)
+    private void UntrackSynchronized(
+        WeakReference<AbstractSignal> weakSignal)
     {
-        signals.RemoveWhere(
-            weakSignal => weakSignal
-                .TryGetTarget(out var referencedSignal)
-                    && ReferenceEquals(referencedSignal, signal));
+        signals.Remove(weakSignal);
     }
 }

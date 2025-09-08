@@ -16,10 +16,14 @@ public abstract class AbstractSignal : IContextDisposable
 
     private HashSet<WeakReference<IRefreshable>> refreshables = [];
 
+    internal WeakReference<AbstractSignal> WeakReference { get; }
+
     internal AbstractSignal(SignalingContext context)
     {
         this.context = context;
-        context.RegisterContextDisposable(this);
+        WeakReference = new(this);
+
+        context.RegisterContextDisposable(new(this));
     }
 
     /// <summary>
@@ -31,23 +35,22 @@ public abstract class AbstractSignal : IContextDisposable
         Refresh(currentRefreshables);
     }
 
-    internal void RegisterRefreshable(IRefreshable refreshable)
+    internal void RegisterRefreshable(
+        WeakReference<IRefreshable> weakRefreshable)
     {
         lock (context.LockObject)
         {
-            RegisterRefreshableSynchronized(refreshable);
+            RegisterRefreshableSynchronized(weakRefreshable);
         }
     }
 
-    internal void UnregisterRefreshable(IRefreshable refreshable)
+    internal void UnregisterRefreshable(
+        WeakReference<IRefreshable> weakRefreshable)
     {
-        refreshables.RemoveWhere(
-            weakRefreshable => weakRefreshable
-                .TryGetTarget(out var referencedRefreshable)
-                    && ReferenceEquals(referencedRefreshable, refreshable));
+        refreshables.Remove(weakRefreshable);
     }
 
-    private ISet<WeakReference<IRefreshable>> GetRefreshables()
+    private HashSet<WeakReference<IRefreshable>> GetRefreshables()
     {
         lock (refreshablesLock)
         {
@@ -57,10 +60,11 @@ public abstract class AbstractSignal : IContextDisposable
         }
     }
 
-    private void RegisterRefreshableSynchronized(IRefreshable refreshable)
+    private void RegisterRefreshableSynchronized(
+        WeakReference<IRefreshable> weakRefreshable)
     {
         context.AssertIsNotDisposed();
-        refreshables.Add(new(refreshable));
+        refreshables.Add(weakRefreshable);
     }
 
     void IContextDisposable.Dispose()
@@ -68,7 +72,7 @@ public abstract class AbstractSignal : IContextDisposable
         foreach (var weakRefreshable in refreshables)
         {
             if (weakRefreshable.TryGetTarget(out var refreshable))
-                refreshable.Dispose(this);
+                refreshable.Dispose(WeakReference);
         }
 
         refreshables.Clear();
