@@ -8,7 +8,7 @@ namespace Companion.Signaling.Core;
 /// </summary>
 public class SignalingContext : IDisposable
 {
-    private readonly List<IContextDisposable> contextDisposables = [];
+    private readonly List<WeakReference<IContextDisposable>> contextDisposables = [];
 
     private bool isDisposed = false;
 
@@ -25,11 +25,12 @@ public class SignalingContext : IDisposable
         }
     }
 
-    internal void RegisterContextDisposable(IContextDisposable accessTracker)
+    internal void RegisterContextDisposable(
+        WeakReference<IContextDisposable> weakAccessTracker)
     {
         lock (LockObject) 
         {
-            RegisterContextDisposableSynchronized(accessTracker);
+            RegisterContextDisposableSynchronized(weakAccessTracker);
         }
     }
 
@@ -43,12 +44,17 @@ public class SignalingContext : IDisposable
     {
         isDisposed = true;
         contextDisposables.ForEach(
-            contextDisposable => contextDisposable.Dispose());
+            weakContextDisposable =>
+            {
+                if (weakContextDisposable.TryGetTarget(out var contextDisposable))
+                    contextDisposable.Dispose();
+            });
     }
 
-    private void RegisterContextDisposableSynchronized(IContextDisposable contextDisposable)
+    private void RegisterContextDisposableSynchronized(
+        WeakReference<IContextDisposable> weakContextDisposable)
     {
         AssertIsNotDisposed();
-        contextDisposables.Add(contextDisposable);
+        contextDisposables.Add(weakContextDisposable);
     }
 }

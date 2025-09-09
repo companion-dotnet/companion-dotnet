@@ -80,7 +80,7 @@ public partial class SignalingComponentBaseTest
        int expectedOnParametersSetCallCount,
        int expectedOnParametersSetAsyncCallCount,
        bool alreadyInitialized,
-       bool disableStateHasChanged,
+       bool preventDefaultRendering,
        bool returnCompletedTaskOnOnInitializeAsync,
        bool returnCompletedTaskOnOnParametersSetAsync,
        bool throwOnOnInitialize,
@@ -106,7 +106,7 @@ public partial class SignalingComponentBaseTest
             onParametersSetAction.Reset();
             onParametersSetAsyncAction.Reset();
 
-            disableStateHasChangedAction.Reset();
+            preventDefaultRenderingAction.Reset();
             buildRenderTreeAction.Reset();
         }
 
@@ -145,8 +145,8 @@ public partial class SignalingComponentBaseTest
         var buildRenderTreeActionCallCount = 0;
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
-        disableStateHasChangedAction.Setup(obj => obj.Invoke())
-            .Returns(disableStateHasChanged);
+        preventDefaultRenderingAction.Setup(obj => obj.Invoke())
+            .Returns(preventDefaultRendering);
         onInitializedAction.Setup(obj => obj.Invoke())
             .Callback(() =>
             {
@@ -278,7 +278,7 @@ public partial class SignalingComponentBaseTest
             obj => obj.Invoke(),
             Times.Exactly(expectedOnParametersSetAsyncCallCount));
 
-        disableStateHasChangedAction.Verify(
+        preventDefaultRenderingAction.Verify(
             obj => obj.Invoke(),
             Times.Exactly(expectedStateHasChangedCallCount));
         buildRenderTreeAction.Verify(
@@ -320,12 +320,12 @@ public partial class SignalingComponentBaseTest
     }
 
     [Fact]
-    public async Task TestStateHasChanged_DisableStateHasChanged()
+    public async Task TestStateHasChanged_PreventDefaultRendering()
     {
         // arrange
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
-        disableStateHasChangedAction.Setup(obj => obj.Invoke())
+        preventDefaultRenderingAction.Setup(obj => obj.Invoke())
             .Returns(true);
 
         // act & assert
@@ -450,7 +450,7 @@ public partial class SignalingComponentBaseTest
         // arrange
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
-        disableStateHasChangedAction.Setup(obj => obj.Invoke())
+        preventDefaultRenderingAction.Setup(obj => obj.Invoke())
             .Returns(true);
 
         // act & assert
@@ -681,13 +681,13 @@ public partial class SignalingComponentBaseTest
     }
 
     [Fact]
-    public void TestDisableStateHasChanged()
+    public void TestPreventDefaultRendering()
     {
         // act
-        var result = component.CallBaseDisableStateHasChanged();
+        var result = component.CallBasePreventDefaultRendering();
 
         // assert
-        Assert.False(result);
+        Assert.True(result);
     }
 
     [Theory]
@@ -702,7 +702,7 @@ public partial class SignalingComponentBaseTest
        int expectedStateHasChangedCallCount,
        int excpectedBuildRenderTreeCallCount,
        bool expectInvalidOperationException,
-       bool disableStateHasChanged,
+       bool preventDefaultRendering,
        bool returnCompletedTask,
        bool throwOnTaskCompletion,
        bool cancelTask)
@@ -711,7 +711,7 @@ public partial class SignalingComponentBaseTest
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
 
-        disableStateHasChangedAction.Reset();
+        preventDefaultRenderingAction.Reset();
         buildRenderTreeAction.Reset();
 
         var taskCompletionSource = new TaskCompletionSource();
@@ -749,8 +749,8 @@ public partial class SignalingComponentBaseTest
         var buildRenderTreeActionCallCount = 0;
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
-        disableStateHasChangedAction.Setup(obj => obj.Invoke())
-            .Returns(disableStateHasChanged);
+        preventDefaultRenderingAction.Setup(obj => obj.Invoke())
+            .Returns(preventDefaultRendering);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
             .Callback(() =>
             {
@@ -785,7 +785,7 @@ public partial class SignalingComponentBaseTest
         else
             Assert.Null(thrownException);
 
-        disableStateHasChangedAction.Verify(
+        preventDefaultRenderingAction.Verify(
             obj => obj.Invoke(),
             Times.Exactly(expectedStateHasChangedCallCount));
         buildRenderTreeAction.Verify(

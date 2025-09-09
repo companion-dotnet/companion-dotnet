@@ -13,11 +13,6 @@
 @code{
     public Signal<int> Counter { get; } = new(0);
 
-    protected override bool DisableStateHasChanged()
-    {
-        return true;
-    }
-
     private void IncreaseCounter()
     {
         Counter.Set(Counter.Get() + 1);

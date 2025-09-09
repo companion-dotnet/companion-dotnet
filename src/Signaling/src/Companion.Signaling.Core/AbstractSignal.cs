@@ -7,17 +7,23 @@ namespace Companion.Signaling.Core;
 /// </summary>
 public abstract class AbstractSignal : IContextDisposable
 {
+    private readonly Lock refreshablesLock = new();
+
     /// <summary>
     /// Signaling context for the current signal
     /// </summary>
     protected readonly SignalingContext context;
 
-    private HashSet<IRefreshable> refreshables = [];
+    private HashSet<WeakReference<IRefreshable>> refreshables = [];
+
+    internal WeakReference<AbstractSignal> WeakReference { get; }
 
     internal AbstractSignal(SignalingContext context)
     {
         this.context = context;
-        context.RegisterContextDisposable(this);
+        WeakReference = new(this);
+
+        context.RegisterContextDisposable(new(this));
     }
 
     /// <summary>
@@ -25,42 +31,59 @@ public abstract class AbstractSignal : IContextDisposable
     /// </summary>
     internal protected void ValueHasChanged()
     {
-        var currentRefreshables = refreshables;
-        refreshables = [];
-
+        var currentRefreshables = GetRefreshables();
         Refresh(currentRefreshables);
     }
 
-    internal void RegisterRefreshable(IRefreshable refreshable)
+    internal void RegisterRefreshable(
+        WeakReference<IRefreshable> weakRefreshable)
     {
         lock (context.LockObject)
         {
-            RegisterRefreshableSynchronized(refreshable);
+            RegisterRefreshableSynchronized(weakRefreshable);
         }
     }
 
-    internal void UnregisterRefreshable(IRefreshable refreshable)
+    internal void UnregisterRefreshable(
+        WeakReference<IRefreshable> weakRefreshable)
     {
-        refreshables.Remove(refreshable);
+        refreshables.Remove(weakRefreshable);
     }
-    
-    private void RegisterRefreshableSynchronized(IRefreshable refreshable)
+
+    private HashSet<WeakReference<IRefreshable>> GetRefreshables()
+    {
+        lock (refreshablesLock)
+        {
+            var currentRefreshables = refreshables;
+            refreshables = [];
+            return currentRefreshables;
+        }
+    }
+
+    private void RegisterRefreshableSynchronized(
+        WeakReference<IRefreshable> weakRefreshable)
     {
         context.AssertIsNotDisposed();
-        refreshables.Add(refreshable);
+        refreshables.Add(weakRefreshable);
     }
 
     void IContextDisposable.Dispose()
     {
-        foreach (var refreshable in refreshables)
-            refreshable.Dispose(this);
+        foreach (var weakRefreshable in refreshables)
+        {
+            if (weakRefreshable.TryGetTarget(out var refreshable))
+                refreshable.Dispose(WeakReference);
+        }
 
         refreshables.Clear();
     } 
 
-    private static void Refresh(ISet<IRefreshable> refreshables)
+    private static void Refresh(ISet<WeakReference<IRefreshable>> refreshables)
     {
-        foreach (var refreshable in refreshables)
-            refreshable.Refresh();
+        foreach (var weakRefreshable in refreshables)
+        {
+            if (weakRefreshable.TryGetTarget(out var refreshable))
+                refreshable.Refresh();
+        }
     }
 }

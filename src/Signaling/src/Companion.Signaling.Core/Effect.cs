@@ -10,7 +10,11 @@ public sealed class Effect : IRefreshable
 {
     private readonly Action callback;
     private readonly AccessTracker accessTracker;
-    private readonly Lock lockObject = new();
+    private readonly Lock isRunQueuedLock = new();
+
+    private WeakReference<IRefreshable>? weakReference;
+    WeakReference<IRefreshable> IRefreshable.WeakReference
+        => weakReference ??= new(this);
 
     internal bool IsRunQueued { get; private set; } = false;
 
@@ -46,7 +50,7 @@ public sealed class Effect : IRefreshable
 
     private bool SetRunQueued()
     {
-        lock (lockObject)
+        lock (isRunQueuedLock)
         {
             return SetRunQueuedSync();
         }
@@ -69,8 +73,8 @@ public sealed class Effect : IRefreshable
         RunCallback();
     }
 
-    void IRefreshable.Dispose(AbstractSignal signal)
+    void IRefreshable.Dispose(WeakReference<AbstractSignal> weakSignal)
     {
-        accessTracker.Untrack(signal);
+        accessTracker.Untrack(weakSignal);
     }
 }

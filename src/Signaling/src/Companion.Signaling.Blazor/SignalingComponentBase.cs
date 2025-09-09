@@ -15,7 +15,6 @@ public class SignalingComponentBase
 {
     private readonly RenderFragment renderFragment;
     private readonly AccessTracker accessTracker;
-    private readonly Lock lockObject = new();
 
     private RenderHandle renderHandle;
     private (IComponentRenderMode? mode, bool cached) renderMode;
@@ -24,6 +23,10 @@ public class SignalingComponentBase
     private bool initialized;
     private bool hasNeverRendered = true;
     private bool hasCalledOnAfterRender;
+
+    private WeakReference<IRefreshable>? weakReference;
+    WeakReference<IRefreshable> IRefreshable.WeakReference
+        => weakReference ??= new(this);
 
     internal bool HasPendingQueuedRender { get; private set; }
 
@@ -105,11 +108,11 @@ public class SignalingComponentBase
     /// <summary>
     /// Notifies the component that its state has changed. When applicable, this will
     /// cause the component to be re-rendered. This behavior can be disabled by overriding
-    /// <see cref="DisableStateHasChanged"/>.
+    /// <see cref="PreventDefaultRendering"/>.
     /// </summary>
     protected void StateHasChanged()
     {
-        if (DisableStateHasChanged() && !hasNeverRendered)
+        if (PreventDefaultRendering() && !hasNeverRendered)
             return;
 
         EnforceStateHasChanged();
@@ -118,7 +121,7 @@ public class SignalingComponentBase
     /// <summary>
     /// Notifies the component that its state has changed. When applicable, this will
     /// cause the component to be re-rendered. This behavior is always enforced, 
-    /// regardless of the return value of <see cref="DisableStateHasChanged"/>.
+    /// regardless of the return value of <see cref="PreventDefaultRendering"/>.
     /// </summary>
     protected void EnforceStateHasChanged()
     {
@@ -270,12 +273,12 @@ public class SignalingComponentBase
     }
 
     /// <summary>
-    /// Returns a flag to indicate when state has changed should be called.
+    /// Returns a flag to indicate whether only signaling can trigger rendering.
     /// </summary>
     /// <returns></returns>
-    protected virtual bool DisableStateHasChanged()
+    protected virtual bool PreventDefaultRendering()
     {
-        return false;
+        return true;
     }
 
     private void TrackAndBuildRenderTree(RenderTreeBuilder builder)
@@ -387,28 +390,16 @@ public class SignalingComponentBase
     {
         try
         {
-            var canQueueRendering = CanQueueRendering();
-            if (!canQueueRendering)
+            if (HasPendingQueuedRender)
                 return;
 
+            HasPendingQueuedRender = true;
             renderHandle.Render(renderFragment);
         }
         catch
         {
             HasPendingQueuedRender = false;
             throw;
-        }
-    }
-
-    private bool CanQueueRendering()
-    {
-        lock (lockObject)
-        {
-            if (HasPendingQueuedRender)
-                return false;
-
-            HasPendingQueuedRender = true;
-            return true;
         }
     }
 
@@ -436,9 +427,9 @@ public class SignalingComponentBase
         InvokeAsync(() => QueueRenderingIfNecessary(renderId));
     }
 
-    void IRefreshable.Dispose(AbstractSignal signal)
+    void IRefreshable.Dispose(WeakReference<AbstractSignal> weakSignal)
     {
-        accessTracker.Untrack(signal);
+        accessTracker.Untrack(weakSignal);
     }
 
     Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg)

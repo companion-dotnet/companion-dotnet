@@ -8,7 +8,7 @@ internal static class TrackingBeacon
     [ThreadStatic]
     private static Stack<TrackingToken>? trackingTokens;
 
-    public static void Push(IRefreshable refreshable)
+    public static void Push(WeakReference<IRefreshable> refreshable)
     {
         InitializeTrackingTokens();
         trackingTokens.Push(new(refreshable));
@@ -21,11 +21,11 @@ internal static class TrackingBeacon
             return;
 
         var trackingToken = trackingTokens.Peek();
-        trackingToken.Signals.Add(signal);
-        signal.RegisterRefreshable(trackingToken.Refreshable);
+        trackingToken.Signals.Add(signal.WeakReference);
+        signal.RegisterRefreshable(trackingToken.WeakRefreshable);
     }
 
-    public static HashSet<AbstractSignal> Pop()
+    public static HashSet<WeakReference<AbstractSignal>> Pop()
     {
         InitializeTrackingTokens();
 
@@ -42,9 +42,9 @@ internal static class TrackingBeacon
         trackingTokens ??= [];
     }
 
-    private class TrackingToken(IRefreshable refreshable)
+    private class TrackingToken(WeakReference<IRefreshable> refreshable)
     {
-        public IRefreshable Refreshable { get; } = refreshable;
-        public HashSet<AbstractSignal> Signals { get; } = [];
+        public WeakReference<IRefreshable> WeakRefreshable { get; } = refreshable;
+        public HashSet<WeakReference<AbstractSignal>> Signals { get; } = [];
     }
 }

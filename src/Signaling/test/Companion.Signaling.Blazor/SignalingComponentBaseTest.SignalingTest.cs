@@ -49,7 +49,7 @@ public partial class SignalingComponentBaseTest
             OnAfterRenderAction = onAfterRenderAction.Object,
             OnAfterRenderAsyncAction = onAfterRenderAsyncAction.Object,
             ShouldRenderAction = shouldRenderAction.Object,
-            DisableStateHasChangedAction = disableStateHasChangedAction.Object
+            PreventDefaultRenderingAction = preventDefaultRenderingAction.Object
         };
 
         renderer.Attach(otherComponent);
@@ -325,7 +325,7 @@ public partial class SignalingComponentBaseTest
             OnAfterRenderAction = onAfterRenderAction.Object,
             OnAfterRenderAsyncAction = onAfterRenderAsyncAction.Object,
             ShouldRenderAction = shouldRenderAction.Object,
-            DisableStateHasChangedAction = disableStateHasChangedAction.Object
+            PreventDefaultRenderingAction = preventDefaultRenderingAction.Object
         };
 
         renderer.Attach(otherComponent);

@@ -8,8 +8,6 @@ namespace Companion.Signaling.Core;
 /// <typeparam name="T">Value type</typeparam>
 public sealed class Signal<T> : ReadonlySignal<T>
 {
-    private readonly Lock lockObject = new();
-
     private T value;
 
     /// <summary>
@@ -35,10 +33,9 @@ public sealed class Signal<T> : ReadonlySignal<T>
     /// <inheritdoc/>
     public override T Get()
     {
-        lock (lockObject)
-        {
-            return GetSynchronized();
-        }
+        context.AssertIsNotDisposed();
+        TrackingBeacon.Register(this);
+        return value;
     }
 
     /// <summary>
@@ -46,21 +43,6 @@ public sealed class Signal<T> : ReadonlySignal<T>
     /// </summary>
     /// <param name="value">The new value to store</param>
     public void Set(T value)
-    {
-        lock (lockObject)
-        {
-            SetSynchronized(value);
-        }
-    }
-
-    private T GetSynchronized()
-    {
-        context.AssertIsNotDisposed();
-        TrackingBeacon.Register(this);
-        return value;
-    }
-
-    private void SetSynchronized(T value)
     {
         context.AssertIsNotDisposed();
         if (Equals(this.value, value))

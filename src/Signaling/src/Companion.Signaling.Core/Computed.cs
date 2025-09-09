@@ -12,7 +12,11 @@ public sealed class Computed<T> : ReadonlySignal<T>, IRefreshable
     private readonly Func<T> valueProvider;
     private readonly AccessTracker accessTracker;
     private readonly Lazy<Signal<T>> lazySignal;
-    private readonly Lock lockObject = new();
+    private readonly Lock isEvaluationQueuedLock = new();
+
+    private WeakReference<IRefreshable>? weakReference;
+    WeakReference<IRefreshable> IRefreshable.WeakReference
+        => weakReference ??= new(this);
 
     internal bool IsEvaluationQueued { get; private set; } = false;
 
@@ -57,7 +61,7 @@ public sealed class Computed<T> : ReadonlySignal<T>, IRefreshable
 
     private bool SetEvaluationQueued()
     {
-        lock (lockObject)
+        lock (isEvaluationQueuedLock)
         {
             return SetEvaluationQueuedSync();
         }
@@ -80,8 +84,8 @@ public sealed class Computed<T> : ReadonlySignal<T>, IRefreshable
         lazySignal.Value.Set(EvaluateValueProvider());
     }
 
-    void IRefreshable.Dispose(AbstractSignal signal)
+    void IRefreshable.Dispose(WeakReference<AbstractSignal> weakSignal)
     {
-        accessTracker.Untrack(signal);
+        accessTracker.Untrack(weakSignal);
     }
 }
