@@ -4,7 +4,7 @@ using Companion.Signaling.Core.Internal.Interfaces;
 namespace Companion.Signaling.Core;
 
 /// <summary>
-/// Calculates values based on other signal values. Result gets updated when those values change
+/// Calculates values based on other signal values. Result automatically gets updated when those values change.
 /// </summary>
 /// <typeparam name="T">Result type</typeparam>
 public sealed class DerivedSignal<T> : ReadonlySignal<T>, IRefreshable
@@ -21,19 +21,19 @@ public sealed class DerivedSignal<T> : ReadonlySignal<T>, IRefreshable
     internal bool IsEvaluationQueued { get; private set; } = false;
 
     /// <summary>
-    /// Instantiate a new derivedSignal value that belongs to no context
+    /// Instantiate a new <see cref="DerivedSignal{T}"/> value that belongs to no <see cref="SignalingContext"/>
     /// </summary>
-    /// <param name="valueProvider">Provider for the derivedSignal value</param>
+    /// <param name="valueProvider">Provider for the value</param>
     public DerivedSignal(Func<T> valueProvider) : this(null, valueProvider)
     {
 
     }
 
     /// <summary>
-    /// Instantiate a new derivedSignal value that belongs to the specified context
+    /// Instantiate a new  <see cref="DerivedSignal{T}"/> value that belongs to the specified <see cref="SignalingContext"/>
     /// </summary>
     /// <param name="context">Context to define lifespan</param>
-    /// <param name="valueProvider">Provider for the derivedSignal value</param>
+    /// <param name="valueProvider">Provider for the value</param>
     public DerivedSignal(SignalingContext? context, Func<T> valueProvider)
         : base(context ?? new())
     {

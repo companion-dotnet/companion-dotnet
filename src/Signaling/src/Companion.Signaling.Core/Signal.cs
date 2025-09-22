@@ -3,7 +3,7 @@
 namespace Companion.Signaling.Core;
 
 /// <summary>
-/// Simple value store that allows subscription to changes
+/// Writable value store that allows subscription to changes
 /// </summary>
 /// <typeparam name="T">Value type</typeparam>
 public sealed class Signal<T> : ReadonlySignal<T>
@@ -11,7 +11,7 @@ public sealed class Signal<T> : ReadonlySignal<T>
     private T value;
 
     /// <summary>
-    /// Instantiate a new signal that belongs to no context
+    /// Instantiate a new <see cref="Signal{T}"/> that belongs to no <see cref="SignalingContext"/>
     /// </summary>
     /// <param name="value">Initial signal value</param>
     public Signal(T value) : this(null, value)
@@ -20,7 +20,7 @@ public sealed class Signal<T> : ReadonlySignal<T>
     }
 
     /// <summary>
-    /// Instantiate a new signal that belongs to the specified context
+    /// Instantiate a new <see cref="Signal{T}"/> that belongs to the specified <see cref="SignalingContext"/>
     /// </summary>
     /// <param name="context">Context to define lifespan</param>
     /// <param name="value">Initial signal value</param>
@@ -40,6 +40,7 @@ public sealed class Signal<T> : ReadonlySignal<T>
 
     /// <summary>
     /// Sets the stored value and notifies all current subscribers that changes happened
+    /// Recalculations are run synchronized. If any fail, this method will throw an exception.
     /// </summary>
     /// <param name="value">The new value to store</param>
     public void Set(T value)

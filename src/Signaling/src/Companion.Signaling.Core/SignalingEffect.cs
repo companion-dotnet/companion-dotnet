@@ -19,19 +19,19 @@ public sealed class SignalingEffect : IRefreshable
     internal bool IsRunQueued { get; private set; } = false;
 
     /// <summary>
-    /// Instantiate a new effect that belongs to no context
+    /// Instantiate a new <see cref="SignalingEffect"/> that belongs to no <see cref="SignalingContext"/>.
     /// </summary>
-    /// <param name="callback">Arbitrary action to call</param>
+    /// <param name="callback">Arbitrary action to run</param>
     public SignalingEffect(Action callback) : this(null, callback)
     {
 
     }
 
     /// <summary>
-    /// Instantiate a new effect that belongs to the specified context
+    /// Instantiate a new <see cref="SignalingEffect"/> that belongs to the specified <see cref="SignalingContext"/>.
     /// </summary>
     /// <param name="context">Context to define lifespan</param>
-    /// <param name="callback">Arbitrary action to call</param>
+    /// <param name="callback">Arbitrary action to run</param>
     public SignalingEffect(SignalingContext? context, Action callback)
     {
         this.callback = callback;

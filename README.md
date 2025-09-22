@@ -1,16 +1,9 @@
 # Companion .NET
-*Companion .NET* provides an API for change detection, therefore allowing recalculations only when it is actually necessary. The concept is pretty much the same as the signals that are available in [Angular](https://angular.dev/guide/signals).
+*Companion .NET* is a collection of C# libraries that are aimed to make *Blazor-based* web development easier.
 
-- **How does this work?** *Companion .NET* provides a wrapper for values it should be used on
-- **What are the restrictions?** The usage is currently restricted to synchronous tasks
-- **What are the disadvantages?** There are two main disadvantages: Accessing a variable takes more computation time (as they are performing the change detection) and it results in slightly less maintainable code by default
+## Contained libraries
+Currently, only the *Companion.Signaling*-API is implemented.
 
-## About the project
-Currently, the project is only a proof of concept. Mainly the Blazor integration is not fully implemented yet, there are some heavy optimizations to be made. If there are any ideas/feedback, it is always welcome.
-
-## Getting started
-*Companion .NET* does not need any special setup. Just add the project as a reference and start using it. Details on how to do so can be found in the following files:
-
- - [Basic Concepts of *Companion .NET*](docs/BasicConcepts.md)
- - [Pitfalls of Memory Leaks](docs/MemoryLeaks.md)
- - [Usage with Blazor Components](docs/UsageWithBlazor.md)
+### Companion .NET Signaling
+*Companion .NET Signaling* provides an API for change detection, therefore adds the possability to re-render components only when it is actually necessary ([see more](./src/Signaling/src/README.md)).
+The corresponding documentation can be found [here](./docs/Signaling/BasicConcepts.md).

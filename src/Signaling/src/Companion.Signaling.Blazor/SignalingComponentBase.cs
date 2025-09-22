@@ -8,7 +8,8 @@ using System.Diagnostics;
 namespace Companion.Signaling.Blazor;
 
 /// <summary>
-/// Base class for components that autmatically tracks <see cref="ReadonlySignal{T}"/> accessed while rendering.
+/// Base class for components that autmatically tracks <see cref="ReadonlySignal{T}"/> accesses while rendering.
+/// When any accessed signal changed, the component will be re-rendered.
 /// </summary>
 public class SignalingComponentBase 
     : SignalingContext, IComponent, IRefreshable, IHandleEvent, IHandleAfterRender
