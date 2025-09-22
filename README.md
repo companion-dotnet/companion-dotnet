@@ -1,5 +1,5 @@
 # Companion .NET
-*Companion .NET* is a collection of C# libraries that are aimed make *Blazor-based* web development easier.
+*Companion .NET* is a collection of C# libraries that are aimed to make *Blazor-based* web development easier.
 
 ## Contained libraries
 Currently, only the *Companion.Signaling*-API is implemented.
