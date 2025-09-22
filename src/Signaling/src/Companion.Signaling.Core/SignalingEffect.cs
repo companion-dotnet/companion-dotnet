@@ -21,7 +21,7 @@ public sealed class SignalingEffect : IRefreshable
     /// <summary>
     /// Instantiate a new <see cref="SignalingEffect"/> that belongs to no <see cref="SignalingContext"/>.
     /// </summary>
-    /// <param name="callback">Arbitrary action to call</param>
+    /// <param name="callback">Arbitrary action to run</param>
     public SignalingEffect(Action callback) : this(null, callback)
     {
 
@@ -31,7 +31,7 @@ public sealed class SignalingEffect : IRefreshable
     /// Instantiate a new <see cref="SignalingEffect"/> that belongs to the specified <see cref="SignalingContext"/>.
     /// </summary>
     /// <param name="context">Context to define lifespan</param>
-    /// <param name="callback">Arbitrary action to call</param>
+    /// <param name="callback">Arbitrary action to run</param>
     public SignalingEffect(SignalingContext? context, Action callback)
     {
         this.callback = callback;

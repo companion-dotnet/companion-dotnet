@@ -3,7 +3,8 @@
 namespace Companion.Signaling.Core;
 
 /// <summary>
-/// Defines a scope for the existance of signals. Required if the lifetime of an object participating in signaling should be stopped strictly at some point.
+/// Defines a scope for the existance of signals. Required if the lifetime of an object participating in signaling should be bound to something.
+/// This could for example be a request or an ui component.
 /// </summary>
 public class SignalingContext : IDisposable
 {
@@ -15,6 +16,7 @@ public class SignalingContext : IDisposable
 
     /// <summary>
     /// Dispose the context. Enforces clean up of all signaling ressources allocated by object referencing this context.
+    /// They can no longer be used for anything afterwards.
     /// </summary>
     public virtual void Dispose()
     {

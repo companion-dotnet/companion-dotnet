@@ -1,7 +1,7 @@
 ﻿namespace Companion.Signaling.Core;
 
 /// <summary>
-/// Simple readonly value store that allows subscription to changes
+/// Readonly value store that allows subscription to changes
 /// </summary>
 /// <typeparam name="T">Value type</typeparam>
 public abstract class ReadonlySignal<T> : AbstractSignal
@@ -13,7 +13,7 @@ public abstract class ReadonlySignal<T> : AbstractSignal
     }
 
     /// <summary>
-    /// Get the current value stored and registers available subscribers to changes
+    /// Gets the current value stored and registers available subscribers to changes
     /// </summary>
     /// <returns>The current value stored</returns>
     public abstract T Get();

@@ -3,7 +3,7 @@
 namespace Companion.Signaling.Core;
 
 /// <summary>
-/// Simple writable value store that allows subscription to changes
+/// Writable value store that allows subscription to changes
 /// </summary>
 /// <typeparam name="T">Value type</typeparam>
 public sealed class Signal<T> : ReadonlySignal<T>
@@ -40,7 +40,7 @@ public sealed class Signal<T> : ReadonlySignal<T>
 
     /// <summary>
     /// Sets the stored value and notifies all current subscribers that changes happened
-    /// Recalculations are run synchronized, if any fail, this method will throw the exception.
+    /// Recalculations are run synchronized. If any fail, this method will throw the exception.
     /// </summary>
     /// <param name="value">The new value to store</param>
     public void Set(T value)
