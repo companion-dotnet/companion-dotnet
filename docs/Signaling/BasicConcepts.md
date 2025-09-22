@@ -1,12 +1,12 @@
 # Basic Concepts of Companion .NET Signaling
 *Companion .NET Signaling* provides an API for reactive change detection, therefore adds the possability to re-render components only when it is actually necessary. The concept is pretty much the same as the signals that are available in [Angular](https://angular.dev/guide/signals).
 
-For more information on reactive programming concepts, pleaser refer to:
+For more information on reactive programming concepts in general, pleaser refer to:
 - [Reactive Programming Overview](https://en.wikipedia.org/wiki/Reactive_programming)
 - [Signals in Angular](https://angular.dev/guide/signals)
 - [Signals in SolidJS](https://www.solidjs.com/docs/latest#signals)
 
-**Signals**, **DerivedSignals** and **SignalingEffects** are the main building blocks of *Companion .NET Signaling*. **Signals** provide the value stores which can later be used in **DerivedSignals** and **SignalingEffects**.
+**Signals, DerivedSignals and SignalingEffects** are the main building blocks of *Companion .NET Signaling*. **Signals** provide the value stores which can later be used in **DerivedSignals** and **SignalingEffects**.
 
 ## Signals
 **Signals** are simple value stores. They require an initial value, which can be changed later. Any access inside of an **DerivedSignal, SignalingEffect or SignalingComponentBase** leads to an subscription (this behavior cannot be nested).
@@ -34,9 +34,9 @@ int value = signal.Get();
 ```
 
 ## SignalingEffects
-**SignalingEffects** are simple subscribers. They accept a callback performing an arbitrary action. Initially, the action is run when the the effect is initialized. Afterwards whenever an accessed **Signal** value changes the **Effect** is rerun.
+**SignalingEffects** are simple subscribers. They accept a callback performing an arbitrary action. Initially, the action is run when the the effect is initialized. Afterwards whenever an accessed **Signal** value changes the **Effect** is re-run.
 
-### Common Use Cases:
+### Common use cases:
 - Console logging
 - External API calls
 
@@ -63,7 +63,7 @@ DerivedSignal<int> derivedSignal = new DerivedSignal<int>(() => {
     return signal.Get() * signal.Get();
 });
 
-// Calculates value agian
+// Calculates value again
 signal.Set(1);
 
 // Access derived signal value

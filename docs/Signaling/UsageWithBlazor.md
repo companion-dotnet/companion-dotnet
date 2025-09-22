@@ -34,8 +34,8 @@ Value: @Value.Get()<br/>
 - No need for *StateHasChanged()* - Signaling detects the update
 
 ## Key benefits of using SignalingComponentBase
-- Automatic subscription tracking – Any signal accessed inside the *Razor* template automatically triggers reactivity and re-rendering. Signals accessed in the @code block will not trigger reactivity
-- Efficient updates – Only re-renders when needed, reducing unnecessary ui updates
+- Automatic subscription tracking – Any signal accessed inside the *Razor* template automatically triggers reactivity and re-rendering. Signals accessed in the *@code* block will not trigger reactivity
+- Efficient updates – Only re-renders when needed, reducing unnecessary UI updates
 
 ## Bind the lifetime of a signal to the lifetime of a SignalingComponentBase
 The **SignalingComponentBase** is inheriting from *SignalingContext*, allowing to bind the lifetime of a signal to the lifetime of the component itself. Details documentation can be found within [SignalingContext.md](./SignalingContext.md).
