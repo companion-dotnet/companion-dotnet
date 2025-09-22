@@ -24,7 +24,7 @@ Currently, there are the following core concepts implemented:
 ## Where can i find documentation?
 All public methods have comments added that are roughly documenting their use. Further there are the following documents explaining the core concepts in detail:
 
- - [BasiConcepts.md](../../../docs/Signaling/BasicConcepts.md): Everything interesting to know about the three main concepts mentioned above
+ - [BasiConcepts.md](../../../docs/Signaling/BasicConcepts.md): Everything interesting to know about the signaling types themself
  - [SignalingContext.md](../../../docs/Signaling/SignalingContext.md): Everything interesting to know about the *SignalingContext* mentioned above
  - [UsageWithBlazor.md](../../../docs/Signaling/UsageWithBlazor.md): Everything interesting to know about the integration into *Blazor*
 
