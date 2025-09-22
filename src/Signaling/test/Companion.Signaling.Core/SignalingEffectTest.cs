@@ -290,7 +290,7 @@ public class SignalingEffectTest
     }
 
     [Fact]
-    public void TestExceptionWhileRunning()
+    public void TestExceptionDuringFirstRun()
     {
         // arrange
         var recalculationCount = 0;
@@ -310,5 +310,38 @@ public class SignalingEffectTest
 
         signal.Set(1);
         Assert.Equal(1, recalculationCount);
+    }
+
+    [Fact]
+    public void TestExceptionDuringLaterRun()
+    {
+        // arrange
+        var recalculationCount = 0;
+
+        var signalingContext = new SignalingContext();
+        var signal = new Signal<int>(0);
+
+        var signalingEffect = new SignalingEffect(
+            signalingContext,
+            () =>
+            {
+                var value = signal.Get();
+
+                recalculationCount++;
+                if (value != 0)
+                    throw new InvalidOperationException();
+            });
+
+        // act & assert
+        Assert.Equal(1, recalculationCount);
+
+        Assert.Throws<InvalidOperationException>(() => signal.Set(1));
+
+        Assert.Equal(2, recalculationCount);
+
+        signalingContext.Dispose();
+        signal.Set(2);
+
+        Assert.Equal(2, recalculationCount);
     }
 }
