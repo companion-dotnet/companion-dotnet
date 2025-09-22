@@ -71,4 +71,4 @@ int value = derivedSignal.Get();
 ```
 
 ## How to use Companion .NET Signaling in Blazor Components?
-For mor information about the integration within *Blazor* see [UsageWithBlazor.md](./UsageWithBlazor.md).
+For mor information about the integration with *Blazor* see [UsageWithBlazor.md](./UsageWithBlazor.md).
