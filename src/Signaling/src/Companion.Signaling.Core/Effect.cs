@@ -35,7 +35,7 @@ public sealed class Effect : IRefreshable
     public Effect(SignalingContext? context, Action callback)
     {
         this.callback = callback;
-        accessTracker = new(this, context);
+        accessTracker = new(this, context, true);
 
         RunCallback();
     }
