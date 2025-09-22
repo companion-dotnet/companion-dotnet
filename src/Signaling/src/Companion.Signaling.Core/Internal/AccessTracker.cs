@@ -6,19 +6,21 @@ internal class AccessTracker : IContextDisposable
 {
     private readonly IRefreshable refreshable;
     private readonly SignalingContext context;
-    private readonly bool disposeOnException;
+    private readonly bool disposeOnExceptionDuringFirstTracking;
+
     private readonly Lock signalsLock = new();
 
     private HashSet<WeakReference<AbstractSignal>> signals = [];
+    private bool wasTrackedBefore = false;
 
     public AccessTracker(
         IRefreshable refreshable,
         SignalingContext? context,
-        bool disposeOnException)
+        bool disposeOnExceptionDuringFirstTracking)
     {
         this.refreshable = refreshable;
         this.context = context ?? new();
-        this.disposeOnException = disposeOnException;
+        this.disposeOnExceptionDuringFirstTracking = disposeOnExceptionDuringFirstTracking;
 
         context?.RegisterContextDisposable(new(this));
     }
@@ -86,14 +88,18 @@ internal class AccessTracker : IContextDisposable
         }
 
         signals = TrackingBeacon.Pop();
+        wasTrackedBefore = true;
         return value;
     }
 
     private void ExceptionThrownWhileTracking()
     {
         signals = TrackingBeacon.Pop();
-        if (disposeOnException)
+        if (disposeOnExceptionDuringFirstTracking
+            && !wasTrackedBefore)
+        {
             Dispose();
+        }
     }
 
     private void UntrackSynchronized(
