@@ -3,8 +3,7 @@
 namespace Companion.Signaling.Core;
 
 /// <summary>
-/// Defines a scope for the existance of signals. Required if objects with shorter lifetime subscribe to objects with a longer one.
-/// Important: If not used properly memory leaks can and will happen.
+/// Defines a scope for the existance of signals. Required if the lifetime of an object participating in signaling should be stopped strictly at some point.
 /// </summary>
 public class SignalingContext : IDisposable
 {
@@ -15,7 +14,7 @@ public class SignalingContext : IDisposable
     internal Lock LockObject { get; } = new();
 
     /// <summary>
-    /// Dispose the signaling context. Enforces clean up of all signaling ressources allocated by object referencing this context.
+    /// Dispose the context. Enforces clean up of all signaling ressources allocated by object referencing this context.
     /// </summary>
     public virtual void Dispose()
     {

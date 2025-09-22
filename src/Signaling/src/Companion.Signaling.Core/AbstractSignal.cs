@@ -3,14 +3,16 @@
 namespace Companion.Signaling.Core;
 
 /// <summary>
-/// Base class for all types of signals
+/// Base class for all kinds of signals (<see cref="Signal{T}"/> and <see cref="DerivedSignal{T}"/>).
+/// Can be used to keep any signal from being collected by the GC.
 /// </summary>
 public abstract class AbstractSignal : IContextDisposable
 {
     private readonly Lock refreshablesLock = new();
 
     /// <summary>
-    /// Signaling context for the current signal
+    /// <see cref="SignalingContext"/> that is currently used.
+    /// This signal will be disposed when the context gets disposed.
     /// </summary>
     protected readonly SignalingContext context;
 
@@ -27,7 +29,8 @@ public abstract class AbstractSignal : IContextDisposable
     }
 
     /// <summary>
-    /// Notify the signaling system that the value has chagned
+    /// Notify the signaling system that the value has changed. This will update all refreshables that registered for it.
+    /// Recalculations are run synchronized, if any fail, this method will throw the exception.
     /// </summary>
     internal protected void ValueHasChanged()
     {
