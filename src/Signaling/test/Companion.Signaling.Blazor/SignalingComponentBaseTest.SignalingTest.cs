@@ -207,56 +207,56 @@ public partial class SignalingComponentBaseTest
     }
 
     [Fact]
-    public async Task TestNestedComputedValue()
+    public async Task TestNestedDerivedSignalValue()
     {
         // arrange
-        var computedRecalculationCount = 0;
-        var computedValue = 0;
+        var derivedSignalRecalculationCount = 0;
+        var derivedSignalValue = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
-            computedRecalculationCount++;
+            derivedSignalRecalculationCount++;
             return signal1.Get();
         });
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => computedValue = computed.Get() + signal2.Get());
+            .Callback(() => derivedSignalValue = derivedSignal.Get() + signal2.Get());
 
         // act
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
 
         // assert
-        Assert.Equal(3, computedValue);
-        Assert.Equal(1, computedRecalculationCount);
+        Assert.Equal(3, derivedSignalValue);
+        Assert.Equal(1, derivedSignalRecalculationCount);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
     }
 
     [Fact]
-    public async Task TestNestedComputedValue_ValueChanged()
+    public async Task TestNestedDerivedSignalValue_ValueChanged()
     {
         // arrange
-        var computedRecalculationCount = 0;
-        var computedValue = 0;
+        var derivedSignalRecalculationCount = 0;
+        var derivedSignalValue = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
-            computedRecalculationCount++;
+            derivedSignalRecalculationCount++;
             return signal1.Get();
         });
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => computedValue = computed.Get() + signal2.Get());
+            .Callback(() => derivedSignalValue = derivedSignal.Get() + signal2.Get());
 
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
@@ -267,32 +267,32 @@ public partial class SignalingComponentBaseTest
         signal2.Set(3);
 
         // assert
-        Assert.Equal(4, computedValue);
-        Assert.Equal(1, computedRecalculationCount);
+        Assert.Equal(4, derivedSignalValue);
+        Assert.Equal(1, derivedSignalRecalculationCount);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
     }
 
     [Fact]
-    public async Task TestNestedComputedValue_NestedValueChanged()
+    public async Task TestNestedDerivedSignalValue_NestedValueChanged()
     {
         // arrange
-        var computedRecalculationCount = 0;
-        var computedValue = 0;
+        var derivedSignalRecalculationCount = 0;
+        var derivedSignalValue = 0;
 
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
-            computedRecalculationCount++;
+            derivedSignalRecalculationCount++;
             return signal1.Get();
         });
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => computedValue = computed.Get() + signal2.Get());
+            .Callback(() => derivedSignalValue = derivedSignal.Get() + signal2.Get());
 
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
@@ -303,15 +303,15 @@ public partial class SignalingComponentBaseTest
         signal1.Set(3);
 
         // assert
-        Assert.Equal(5, computedValue);
-        Assert.Equal(2, computedRecalculationCount);
+        Assert.Equal(5, derivedSignalValue);
+        Assert.Equal(2, derivedSignalRecalculationCount);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
     }
 
     [Fact]
-    public async Task TestNestedComputedValueChanged_MultipleComponentRedraws()
+    public async Task TestNestedDerivedSignalValueChanged_MultipleComponentRedraws()
     {
 
         var otherBuildRenderTreeAction = new Mock<Action>();
@@ -331,8 +331,8 @@ public partial class SignalingComponentBaseTest
         renderer.Attach(otherComponent);
 
         var signal = new Signal<int>(1);
-        var computed = new Computed<int>(signal.Get);
-        var computedValue = 0;
+        var derivedSignal = new DerivedSignal<int>(signal.Get);
+        var derivedSignalValue = 0;
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
@@ -343,7 +343,7 @@ public partial class SignalingComponentBaseTest
                 signal.Set(3);
             });
         otherBuildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => computedValue = computed.Get());
+            .Callback(() => derivedSignalValue = derivedSignal.Get());
 
         await otherComponent.CallBaseInvokeAsync(
             otherComponent.CallBaseStateHasChanged);
@@ -355,7 +355,7 @@ public partial class SignalingComponentBaseTest
             component.CallBaseStateHasChanged);
 
         // assert
-        Assert.Equal(3, computedValue);
+        Assert.Equal(3, derivedSignalValue);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);

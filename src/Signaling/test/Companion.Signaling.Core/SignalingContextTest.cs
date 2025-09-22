@@ -15,9 +15,9 @@ public class SignalingContextTest
         Assert.Throws<InvalidOperationException>(
             () => new Signal<int>(signalingContext, 0));
         Assert.Throws<InvalidOperationException>(
-            () => new Computed<int>(signalingContext, () => 0));
+            () => new DerivedSignal<int>(signalingContext, () => 0));
         Assert.Throws<InvalidOperationException>(
-            () => new Effect(signalingContext, () => { }));
+            () => new SignalingEffect(signalingContext, () => { }));
     }
 
     [Fact]
@@ -52,14 +52,14 @@ public class SignalingContextTest
     }
 
     [Fact]
-    public void TestSignalInUseByComputed_ContextDisposed()
+    public void TestSignalInUseByDerivedSignal_ContextDisposed()
     {
         // arrange
         var recalculationCount = 0;
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(signalingContext, 1);
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
             return signal.Get();
@@ -72,12 +72,12 @@ public class SignalingContextTest
         Assert.Throws<InvalidOperationException>(
             () => signal.Set(2));
 
-        Assert.Equal(1, computed.Get());
+        Assert.Equal(1, derivedSignal.Get());
         Assert.Equal(1, recalculationCount);
     }
     
     [Fact]
-    public void TestSignalInUseByEffect_ContextDisposed()
+    public void TestSignalInUseBySignalingEffect_ContextDisposed()
     {
         // arrange
         var recalculationCount = 0;
@@ -85,7 +85,7 @@ public class SignalingContextTest
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(signalingContext, 1);
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount++;
             value = signal.Get();
@@ -103,14 +103,14 @@ public class SignalingContextTest
     }
 
     [Fact]
-    public void TestComputed()
+    public void TestDerivedSignal()
     {
         // arrange
         var recalculationCount = 0;
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(1);
-        var computed = new Computed<int>(signalingContext, () =>
+        var derivedSignal = new DerivedSignal<int>(signalingContext, () =>
         {
             recalculationCount++;
             return signal.Get();
@@ -121,18 +121,18 @@ public class SignalingContextTest
 
         // assert
         Assert.Equal(2, recalculationCount);
-        Assert.Equal(2, computed.Get());
+        Assert.Equal(2, derivedSignal.Get());
     }
 
     [Fact]
-    public void TestComputed_ContextDisposed()
+    public void TestDerivedSignal_ContextDisposed()
     {
         // arrange
         var recalculationCount = 0;
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(1);
-        var computed = new Computed<int>(signalingContext, () =>
+        var derivedSignal = new DerivedSignal<int>(signalingContext, () =>
         {
             recalculationCount++;
             return signal.Get();
@@ -145,22 +145,22 @@ public class SignalingContextTest
         // assert
         Assert.Equal(1, recalculationCount);
         Assert.Throws<InvalidOperationException>(
-            () => computed.Get());
+            () => derivedSignal.Get());
     }
     
     [Fact]
-    public void TestComputedInUseByComputed_ContextDisposed()
+    public void TestDerivedSignalInUseByDerivedSignal_ContextDisposed()
     {
         // arrange
         var recalculationCount = 0;
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(1);
-        var computed1 = new Computed<int>(signalingContext, signal.Get);
-        var computed2 = new Computed<int>(() =>
+        var derivedSignal1 = new DerivedSignal<int>(signalingContext, signal.Get);
+        var derivedSignal2 = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
-            return computed1.Get();
+            return derivedSignal1.Get();
         });
 
         // act
@@ -169,11 +169,11 @@ public class SignalingContextTest
 
         // assert
         Assert.Equal(1, recalculationCount);
-        Assert.Equal(1, computed2.Get());
+        Assert.Equal(1, derivedSignal2.Get());
     }
     
     [Fact]
-    public void TestComputedInUseByEffect_ContextDisposed()
+    public void TestDerivedSignalInUseBySignalingEffect_ContextDisposed()
     {
         // arrange
         var recalculationCount = 0;
@@ -181,11 +181,11 @@ public class SignalingContextTest
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(1);
-        var computed = new Computed<int>(signalingContext, signal.Get);
-        var effect = new Effect(signalingContext, () =>
+        var derivedSignal = new DerivedSignal<int>(signalingContext, signal.Get);
+        var signalingEffect = new SignalingEffect(signalingContext, () =>
         {
             recalculationCount++;
-            value = computed.Get();
+            value = derivedSignal.Get();
         });
 
         // act
@@ -198,7 +198,7 @@ public class SignalingContextTest
     }
 
     [Fact]
-    public void TestEffect()
+    public void TestSignalingEffect()
     {
         // arrange
         var recalculationCount = 0;
@@ -206,7 +206,7 @@ public class SignalingContextTest
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(1);
-        var effect = new Effect(signalingContext, () =>
+        var signalingEffect = new SignalingEffect(signalingContext, () =>
         {
             recalculationCount++;
             value = signal.Get();
@@ -221,7 +221,7 @@ public class SignalingContextTest
     }
 
     [Fact]
-    public void TestEffect_ContextDisposed()
+    public void TestSignalingEffect_ContextDisposed()
     {
         // arrange
         var recalculationCount = 0;
@@ -229,7 +229,7 @@ public class SignalingContextTest
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(1);
-        var effect = new Effect(signalingContext , () =>
+        var signalingEffect = new SignalingEffect(signalingContext , () =>
         {
             recalculationCount++;
             value = signal.Get();
