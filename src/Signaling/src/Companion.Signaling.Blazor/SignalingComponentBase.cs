@@ -60,7 +60,7 @@ public class SignalingComponentBase
     public SignalingComponentBase()
     {
         renderFragment = TrackAndBuildRenderTree;
-        accessTracker = new(this, this);
+        accessTracker = new(this, this, false);
     }
 
     /// <summary>

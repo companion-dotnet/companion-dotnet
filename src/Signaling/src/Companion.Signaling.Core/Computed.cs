@@ -38,7 +38,7 @@ public sealed class Computed<T> : ReadonlySignal<T>, IRefreshable
         : base(context ?? new())
     {
         this.valueProvider = valueProvider;
-        accessTracker = new(this, context);
+        accessTracker = new(this, context, true);
 
         lazySignal = new(() => new(EvaluateValueProvider()));
         _ = lazySignal.Value;

@@ -288,4 +288,27 @@ public class EffectTest
         Assert.Equal(6, value);
         Assert.Equal(3, recalculationCount);
     }
+
+    [Fact]
+    public void TestExceptionWhileRunning()
+    {
+        // arrange
+        var recalculationCount = 0;
+        var signal = new Signal<int>(0);
+
+        // act & assert
+        Assert.Throws<InvalidOperationException>(() => new Effect(
+            () =>
+            {
+                signal.Get();
+
+                recalculationCount++;
+                throw new InvalidOperationException();
+            }));
+
+        Assert.Equal(1, recalculationCount);
+
+        signal.Set(1);
+        Assert.Equal(1, recalculationCount);
+    }
 }

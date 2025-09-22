@@ -307,4 +307,27 @@ public class ComputedTest
         Assert.Equal(6, computed.Get());
         Assert.Equal(3, recalculationCount);
     }
+
+    [Fact]
+    public void TestExceptionDuringComputation()
+    {
+        // arrange
+        var recalculationCount = 0;
+        var signal = new Signal<int>(0);
+
+        // act & assert
+        Assert.Throws<InvalidOperationException>(() => new Computed<int>(
+            () =>
+            {
+                signal.Get();
+
+                recalculationCount++;
+                throw new InvalidOperationException();
+            }));
+
+        Assert.Equal(1, recalculationCount);
+
+        signal.Set(1);
+        Assert.Equal(1, recalculationCount);
+    }
 }

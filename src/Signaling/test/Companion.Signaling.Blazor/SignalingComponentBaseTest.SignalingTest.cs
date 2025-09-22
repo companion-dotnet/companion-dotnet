@@ -10,12 +10,12 @@ public partial class SignalingComponentBaseTest
     {
         // arrange
         var signal = new Signal<int>(1);
-        var siganlValue = 0;
+        var signalValue = 0;
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => siganlValue = signal.Get());
+            .Callback(() => signalValue = signal.Get());
 
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
@@ -26,7 +26,7 @@ public partial class SignalingComponentBaseTest
         signal.Set(2);
 
         // assert
-        Assert.Equal(2, siganlValue);
+        Assert.Equal(2, signalValue);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
@@ -92,12 +92,12 @@ public partial class SignalingComponentBaseTest
     {
         // arrange
         var signal = new Signal<int>(1);
-        var siganlValue = 0;
+        var signalValue = 0;
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => siganlValue = signal.Get());
+            .Callback(() => signalValue = signal.Get());
 
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
@@ -108,7 +108,7 @@ public partial class SignalingComponentBaseTest
         signal.Set(1);
 
         // assert
-        Assert.Equal(1, siganlValue);
+        Assert.Equal(1, signalValue);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Never);
@@ -119,12 +119,12 @@ public partial class SignalingComponentBaseTest
     {
         // arrange
         var signal = new Signal<int>(1);
-        var siganlValue = 0;
+        var signalValue = 0;
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => siganlValue = signal.Get());
+            .Callback(() => signalValue = signal.Get());
 
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
@@ -136,7 +136,7 @@ public partial class SignalingComponentBaseTest
         signal.Set(3);
 
         // assert
-        Assert.Equal(3, siganlValue);
+        Assert.Equal(3, signalValue);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Exactly(2));
@@ -148,12 +148,12 @@ public partial class SignalingComponentBaseTest
         // arrange
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
-        var siganlValue = 0;
+        var signalValue = 0;
         
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => siganlValue = signal1.Get());
+            .Callback(() => signalValue = signal1.Get());
 
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
@@ -164,7 +164,7 @@ public partial class SignalingComponentBaseTest
         signal2.Set(3);
 
         // assert
-        Assert.Equal(1, siganlValue);
+        Assert.Equal(1, signalValue);
         buildRenderTreeAction.Verify(obj => obj.Invoke(), Times.Never);
     }
 
@@ -174,7 +174,7 @@ public partial class SignalingComponentBaseTest
         // arrange
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
-        var siganlValue = 0;
+        var signalValue = 0;
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
@@ -183,11 +183,11 @@ public partial class SignalingComponentBaseTest
             {
                 if (signal1.Get() == 3)
                 {
-                    siganlValue = signal1.Get();
+                    signalValue = signal1.Get();
                     return;
                 }
 
-                siganlValue = signal2.Get();
+                signalValue = signal2.Get();
             });
 
         await component.CallBaseInvokeAsync(
@@ -200,7 +200,7 @@ public partial class SignalingComponentBaseTest
         signal2.Set(4);
 
         // assert
-        Assert.Equal(3, siganlValue);
+        Assert.Equal(3, signalValue);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Once);
@@ -369,12 +369,12 @@ public partial class SignalingComponentBaseTest
     {
         // arrange
         var signal = new Signal<int>(1);
-        var siganlValue = 0;
+        var signalValue = 0;
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => siganlValue = signal.Get());
+            .Callback(() => signalValue = signal.Get());
 
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
@@ -385,7 +385,7 @@ public partial class SignalingComponentBaseTest
         component.Dispose();
         signal.Set(2);
 
-        Assert.Equal(1, siganlValue);
+        Assert.Equal(1, signalValue);
         buildRenderTreeAction.Verify(
             obj => obj.Invoke(),
             Times.Never);
@@ -403,12 +403,12 @@ public partial class SignalingComponentBaseTest
         var context = new SignalingContext();
 
         var signal = new Signal<int>(context, 1);
-        var siganlValue = 0;
+        var signalValue = 0;
 
         shouldRenderAction.Setup(obj => obj.Invoke())
             .Returns(true);
         buildRenderTreeAction.Setup(obj => obj.Invoke())
-            .Callback(() => siganlValue = signal.Get());
+            .Callback(() => signalValue = signal.Get());
 
         await component.CallBaseInvokeAsync(
             component.CallBaseStateHasChanged);
@@ -422,7 +422,7 @@ public partial class SignalingComponentBaseTest
         Assert.Throws<InvalidOperationException>(
             () => signal.Set(2));
 
-        Assert.Equal(1, siganlValue);
+        Assert.Equal(1, signalValue);
         buildRenderTreeAction.Verify(
             obj => obj(),
             Times.Never);
@@ -512,5 +512,46 @@ public partial class SignalingComponentBaseTest
         buildRenderTreeAction.Verify(
             obj => obj(),
             Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task TestExceptionWhileRendering()
+    {
+        // arrange
+        var signal = new Signal<int>(0);
+        var signalValue = 0;
+
+        var exception = new Exception();
+        shouldRenderAction.Setup(obj => obj.Invoke())
+            .Returns(true);
+        buildRenderTreeAction.Setup(obj => obj.Invoke())
+            .Callback(() =>
+            {
+                signalValue = signal.Get();
+                throw exception;
+            });
+
+        await component.CallBaseInvokeAsync(
+            component.CallBaseStateHasChanged);
+
+        buildRenderTreeAction.Invocations.Clear();
+
+        // act & assert
+        Assert.Equal(renderer.HandledException, exception);
+        Assert.Equal(0, signalValue);
+
+        exception = new Exception();
+        signal.Set(1);
+
+        Assert.Equal(renderer.HandledException, exception);
+        Assert.Equal(1, signalValue);
+
+        var oldException = exception;
+        exception = new Exception();
+        component.Dispose();
+        signal.Set(2);
+
+        Assert.Equal(renderer.HandledException, oldException);
+        Assert.Equal(1, signalValue);
     }
 }
