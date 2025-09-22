@@ -9,7 +9,7 @@ For more information on reactive programming concepts in general, pleaser refer 
 **Signals, DerivedSignals and SignalingEffects** are the main building blocks of *Companion .NET Signaling*. **Signals** provide the value stores which can later be used in **DerivedSignals** and **SignalingEffects**.
 
 ## Signals
-**Signals** are simple value stores. They require an initial value, which can be changed later. Any access inside of an **DerivedSignal, SignalingEffect or SignalingComponentBase** leads to an subscription (this behavior cannot be nested).
+**Signals** are simple value stores. They require an initial value, which can be changed later. Any access inside of a **DerivedSignal, SignalingEffect or SignalingComponentBase** leads to a subscription (this behavior cannot be nested).
 
 Signals are the foundation of this reactivity system. They:
 - Store mutable state
