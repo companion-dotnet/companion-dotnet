@@ -29,7 +29,7 @@ public abstract class AbstractSignal : IContextDisposable
 
     /// <summary>
     /// Notify the signaling system that the value has changed. This will update all refreshables that registered for it.
-    /// Recalculations are run synchronized. If any fail, this method will throw the exception.
+    /// Recalculations are run synchronized. If any fail, this method will throw an exception.
     /// </summary>
     internal protected void ValueHasChanged()
     {

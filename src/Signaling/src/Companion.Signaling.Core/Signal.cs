@@ -40,7 +40,7 @@ public sealed class Signal<T> : ReadonlySignal<T>
 
     /// <summary>
     /// Sets the stored value and notifies all current subscribers that changes happened
-    /// Recalculations are run synchronized. If any fail, this method will throw the exception.
+    /// Recalculations are run synchronized. If any fail, this method will throw an exception.
     /// </summary>
     /// <param name="value">The new value to store</param>
     public void Set(T value)

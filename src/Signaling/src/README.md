@@ -13,7 +13,7 @@ Currently, there are the following core concepts implemented:
 - **Companion.Signaling.Core.Signal&lt;T&gt;**: A simple value store with signaling capability
 - **Companion.Signaling.Core.DerivedSignal&lt;T&gt;**: Allow the calculation of a signal based on other signals (it gets recalculated whenever a signal used is changed)
 - **Companion.Signaling.Core.SignalingEffect**: Runs arbitrary code that is dependent on some signals (it gets re-run whenever a signal used is changed)
-- **Companion.Signaling.Core.SignalingContext**: Exposes control to the lifetime of any of the types mentioned above
+- **Companion.Signaling.Core.SignalingContext**: Exposes control to the lifetime of any of the three types mentioned above
 - **Companion.Signaling.Blazor.SignalingComponentBase**: A *Blazor* component base which subscribes to signal value changes as *DerivedSignals* and *SignalingEffects* do
 
 ## When to use Companion .NET Signaling?
