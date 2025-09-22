@@ -6,7 +6,7 @@ namespace Companion.Signaling.Core;
 /// <summary>
 /// Runs arbitrary action on signal value changes
 /// </summary>
-public sealed class Effect : IRefreshable
+public sealed class SignalingEffect : IRefreshable
 {
     private readonly Action callback;
     private readonly AccessTracker accessTracker;
@@ -22,7 +22,7 @@ public sealed class Effect : IRefreshable
     /// Instantiate a new effect that belongs to no context
     /// </summary>
     /// <param name="callback">Arbitrary action to call</param>
-    public Effect(Action callback) : this(null, callback)
+    public SignalingEffect(Action callback) : this(null, callback)
     {
 
     }
@@ -32,7 +32,7 @@ public sealed class Effect : IRefreshable
     /// </summary>
     /// <param name="context">Context to define lifespan</param>
     /// <param name="callback">Arbitrary action to call</param>
-    public Effect(SignalingContext? context, Action callback)
+    public SignalingEffect(SignalingContext? context, Action callback)
     {
         this.callback = callback;
         accessTracker = new(this, context, true);

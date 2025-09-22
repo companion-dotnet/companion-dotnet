@@ -1,6 +1,6 @@
 ﻿namespace Companion.Signaling.Core.Test;
 
-public class ComputedTest
+public class DerivedSignalTest
 {
     [Fact]
     public void TestGet()
@@ -10,14 +10,14 @@ public class ComputedTest
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
             return signal.Get();
         });
 
         // act
-        var value = computed.Get();
+        var value = derivedSignal.Get();
 
         // assert
         Assert.Equal(1, value);
@@ -32,15 +32,15 @@ public class ComputedTest
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
             return signal.Get();
         });
 
         // act
-        var value1 = computed.Get();
-        var value2 = computed.Get();
+        var value1 = derivedSignal.Get();
+        var value2 = derivedSignal.Get();
 
         // assert
         Assert.Equal(1, value1);
@@ -56,7 +56,7 @@ public class ComputedTest
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
             return signal.Get();
@@ -66,7 +66,7 @@ public class ComputedTest
         signal.Set(2);
 
         // assert
-        Assert.Equal(2, computed.Get());
+        Assert.Equal(2, derivedSignal.Get());
         Assert.Equal(2, recalculationCount);
     }
 
@@ -78,7 +78,7 @@ public class ComputedTest
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
             return signal.Get();
@@ -88,7 +88,7 @@ public class ComputedTest
         signal.Set(1);
 
         // assert
-        Assert.Equal(1, computed.Get());
+        Assert.Equal(1, derivedSignal.Get());
         Assert.Equal(1, recalculationCount);
     }
 
@@ -100,7 +100,7 @@ public class ComputedTest
 
         var signal = new Signal<int>(1);
 
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
             return signal.Get();
@@ -111,7 +111,7 @@ public class ComputedTest
         signal.Set(3);
 
         // assert
-        Assert.Equal(3, computed.Get());
+        Assert.Equal(3, derivedSignal.Get());
         Assert.Equal(3, recalculationCount);
     }
 
@@ -124,7 +124,7 @@ public class ComputedTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
             return signal1.Get();
@@ -134,7 +134,7 @@ public class ComputedTest
         signal2.Set(3);
 
         // assert
-        Assert.Equal(1, computed.Get());
+        Assert.Equal(1, derivedSignal.Get());
         Assert.Equal(1, recalculationCount);
     }
 
@@ -147,7 +147,7 @@ public class ComputedTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             recalculationCount++;
             if (signal1.Get() == 3)
@@ -160,12 +160,12 @@ public class ComputedTest
         signal2.Set(4);
 
         // assert
-        Assert.Equal(3, computed.Get());
+        Assert.Equal(3, derivedSignal.Get());
         Assert.Equal(2, recalculationCount);
     }
 
     [Fact]
-    public void TestNestedComputedValue()
+    public void TestNestedDerivedSignalValue()
     {
         // arrange
         var recalculationCount1 = 0;
@@ -174,20 +174,20 @@ public class ComputedTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed1 = new Computed<int>(() =>
+        var derivedSignal1 = new DerivedSignal<int>(() =>
         {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        var computed2 = new Computed<int>(() =>
+        var derivedSignal2 = new DerivedSignal<int>(() =>
         {
             recalculationCount2++;
-            return computed1.Get() + signal2.Get();
+            return derivedSignal1.Get() + signal2.Get();
         });
 
         // act
-        var value = computed2.Get();
+        var value = derivedSignal2.Get();
 
         // assert
         Assert.Equal(3, value);
@@ -196,7 +196,7 @@ public class ComputedTest
     }
 
     [Fact]
-    public void TestNestedComputedValue_ValueChanged()
+    public void TestNestedDerivedSignalValue_ValueChanged()
     {
         // arrange
         var recalculationCount1 = 0;
@@ -205,29 +205,29 @@ public class ComputedTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed1 = new Computed<int>(() =>
+        var derivedSignal1 = new DerivedSignal<int>(() =>
         {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        var computed2 = new Computed<int>(() =>
+        var derivedSignal2 = new DerivedSignal<int>(() =>
         {
             recalculationCount2++;
-            return computed1.Get() + signal2.Get();
+            return derivedSignal1.Get() + signal2.Get();
         });
 
         // act
         signal2.Set(3);
 
         // assert
-        Assert.Equal(4, computed2.Get());
+        Assert.Equal(4, derivedSignal2.Get());
         Assert.Equal(1, recalculationCount1);
         Assert.Equal(2, recalculationCount2);
     }
 
     [Fact]
-    public void TestNestedComputedValue_NestedValueChanged()
+    public void TestNestedDerivedSignalValue_NestedValueChanged()
     {
         // arrange
         var recalculationCount1 = 0;
@@ -236,23 +236,23 @@ public class ComputedTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed1 = new Computed<int>(() =>
+        var derivedSignal1 = new DerivedSignal<int>(() =>
         {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        var computed2 = new Computed<int>(() =>
+        var derivedSignal2 = new DerivedSignal<int>(() =>
         {
             recalculationCount2++;
-            return computed1.Get() + signal2.Get();
+            return derivedSignal1.Get() + signal2.Get();
         });
 
         // act
         signal1.Set(3);
 
         // assert
-        Assert.Equal(5, computed2.Get());
+        Assert.Equal(5, derivedSignal2.Get());
         Assert.Equal(2, recalculationCount1);
         Assert.Equal(2, recalculationCount2);
     }
@@ -271,7 +271,7 @@ public class ComputedTest
         var taskCompletionSource2 = new TaskCompletionSource();
 
         taskCompletionSource1.SetResult();
-        var computed = new Computed<int>(() =>
+        var derivedSignal = new DerivedSignal<int>(() =>
         {
             signal1.Get();
             signal2.Get();
@@ -292,7 +292,7 @@ public class ComputedTest
         await taskCompletionSource2.Task;
 
         var setterTask2 = Task.Run(() => signal2.Set(5));
-        while (!computed!.IsEvaluationQueued)
+        while (!derivedSignal!.IsEvaluationQueued)
             ;
 
         signal3.Set(6);
@@ -304,7 +304,7 @@ public class ComputedTest
         await setterTask2;
 
         // assert
-        Assert.Equal(6, computed.Get());
+        Assert.Equal(6, derivedSignal.Get());
         Assert.Equal(3, recalculationCount);
     }
 
@@ -316,7 +316,7 @@ public class ComputedTest
         var signal = new Signal<int>(0);
 
         // act & assert
-        Assert.Throws<InvalidOperationException>(() => new Computed<int>(
+        Assert.Throws<InvalidOperationException>(() => new DerivedSignal<int>(
             () =>
             {
                 signal.Get();

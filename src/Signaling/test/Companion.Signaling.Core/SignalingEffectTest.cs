@@ -1,9 +1,9 @@
 ﻿namespace Companion.Signaling.Core.Test;
 
-public class EffectTest
+public class SignalingEffectTest
 {
     [Fact]
-    public void TestEffect()
+    public void TestSignalingEffect()
     {
         // arrange
         var recalculationCount = 0;
@@ -11,7 +11,7 @@ public class EffectTest
 
         var signal = new Signal<int>(1);
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount++;
             value = signal.Get();
@@ -31,7 +31,7 @@ public class EffectTest
 
         var signal = new Signal<int>(1);
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount++;
             value = signal.Get();
@@ -54,7 +54,7 @@ public class EffectTest
 
         var signal = new Signal<int>(1);
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount++;
             value = signal.Get();
@@ -77,7 +77,7 @@ public class EffectTest
 
         var signal = new Signal<int>(1);
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount++;
             value = signal.Get();
@@ -102,7 +102,7 @@ public class EffectTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount++;
             value = signal1.Get();
@@ -126,7 +126,7 @@ public class EffectTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount++;
             if (signal1.Get() == 3)
@@ -148,7 +148,7 @@ public class EffectTest
     }
 
     [Fact]
-    public void TestNestedComputedValue()
+    public void TestNestedDerivedSignalValue()
     {
         // arrange
         var recalculationCount1 = 0;
@@ -158,15 +158,15 @@ public class EffectTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed = new Computed<int>(() => {
+        var derivedSignal = new DerivedSignal<int>(() => {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount2++;
-            value = computed.Get() + signal2.Get();
+            value = derivedSignal.Get() + signal2.Get();
         });
 
         // assert
@@ -176,7 +176,7 @@ public class EffectTest
     }
 
     [Fact]
-    public void TestNestedComputedValue_ValueChanged()
+    public void TestNestedDerivedSignalValue_ValueChanged()
     {
         // arrange
         var recalculationCount1 = 0;
@@ -186,15 +186,15 @@ public class EffectTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed = new Computed<int>(() => {
+        var derivedSignal = new DerivedSignal<int>(() => {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount2++;
-            value = computed.Get() + signal2.Get();
+            value = derivedSignal.Get() + signal2.Get();
         });
 
         // act
@@ -207,7 +207,7 @@ public class EffectTest
     }
 
     [Fact]
-    public void TestNestedComputedValue_NestedValueChanged()
+    public void TestNestedDerivedSignalValue_NestedValueChanged()
     {
         // arrange
         var recalculationCount1 = 0;
@@ -217,15 +217,15 @@ public class EffectTest
         var signal1 = new Signal<int>(1);
         var signal2 = new Signal<int>(2);
 
-        var computed = new Computed<int>(() => {
+        var derivedSignal = new DerivedSignal<int>(() => {
             recalculationCount1++;
             return signal1.Get();
         });
 
-        _ = new Effect(() =>
+        _ = new SignalingEffect(() =>
         {
             recalculationCount2++;
-            value = computed.Get() + signal2.Get();
+            value = derivedSignal.Get() + signal2.Get();
         });
 
         // act
@@ -252,7 +252,7 @@ public class EffectTest
         var taskCompletionSource2 = new TaskCompletionSource();
 
         taskCompletionSource1.SetResult();
-        var effect = new Effect(() =>
+        var signalingEffect = new SignalingEffect(() =>
         {
             signal1.Get();
             signal2.Get();
@@ -273,7 +273,7 @@ public class EffectTest
         await taskCompletionSource2.Task;
 
         var setterTask2 = Task.Run(() => signal2.Set(5));
-        while (!effect!.IsRunQueued)
+        while (!signalingEffect!.IsRunQueued)
             ;
 
         signal3.Set(6);
@@ -297,7 +297,7 @@ public class EffectTest
         var signal = new Signal<int>(0);
 
         // act & assert
-        Assert.Throws<InvalidOperationException>(() => new Effect(
+        Assert.Throws<InvalidOperationException>(() => new SignalingEffect(
             () =>
             {
                 signal.Get();

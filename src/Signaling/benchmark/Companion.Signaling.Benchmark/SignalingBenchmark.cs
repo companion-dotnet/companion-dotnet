@@ -29,10 +29,10 @@ public class SignalingBenchmark
     }
 
     [Benchmark]
-    public void AccessSignalWithinComputed()
+    public void AccessSignalWithinDerivedSignal()
     {
         var x = new Signal<int>(0);
-        var y = new Computed<int>(x.Get).Get();
+        var y = new DerivedSignal<int>(x.Get).Get();
         _ = y;
     }
 

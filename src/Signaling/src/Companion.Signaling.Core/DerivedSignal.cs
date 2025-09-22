@@ -7,7 +7,7 @@ namespace Companion.Signaling.Core;
 /// Calculates values based on other signal values. Result gets updated when those values change
 /// </summary>
 /// <typeparam name="T">Result type</typeparam>
-public sealed class Computed<T> : ReadonlySignal<T>, IRefreshable
+public sealed class DerivedSignal<T> : ReadonlySignal<T>, IRefreshable
 {
     private readonly Func<T> valueProvider;
     private readonly AccessTracker accessTracker;
@@ -21,20 +21,20 @@ public sealed class Computed<T> : ReadonlySignal<T>, IRefreshable
     internal bool IsEvaluationQueued { get; private set; } = false;
 
     /// <summary>
-    /// Instantiate a new computed value that belongs to no context
+    /// Instantiate a new derivedSignal value that belongs to no context
     /// </summary>
-    /// <param name="valueProvider">Provider for the computed value</param>
-    public Computed(Func<T> valueProvider) : this(null, valueProvider)
+    /// <param name="valueProvider">Provider for the derivedSignal value</param>
+    public DerivedSignal(Func<T> valueProvider) : this(null, valueProvider)
     {
 
     }
 
     /// <summary>
-    /// Instantiate a new computed value that belongs to the specified context
+    /// Instantiate a new derivedSignal value that belongs to the specified context
     /// </summary>
     /// <param name="context">Context to define lifespan</param>
-    /// <param name="valueProvider">Provider for the computed value</param>
-    public Computed(SignalingContext? context, Func<T> valueProvider)
+    /// <param name="valueProvider">Provider for the derivedSignal value</param>
+    public DerivedSignal(SignalingContext? context, Func<T> valueProvider)
         : base(context ?? new())
     {
         this.valueProvider = valueProvider;
