@@ -38,4 +38,4 @@ Value: @Value.Get()<br/>
 - Efficient updates – Only re-renders when needed, reducing unnecessary UI updates
 
 ## Bind the lifetime of a signal to the lifetime of a SignalingComponentBase
-The **SignalingComponentBase** is inheriting from *SignalingContext*, allowing to bind the lifetime of a signal to the lifetime of the component itself. Details documentation can be found within [SignalingContext.md](./SignalingContext.md).
+The **SignalingComponentBase** is inheriting from *SignalingContext*, allowing to bind the lifetime of a signal to the lifetime of the component itself. Detailed documentation can be found within [SignalingContext.md](./SignalingContext.md).
