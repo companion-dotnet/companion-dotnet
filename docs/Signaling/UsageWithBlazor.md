@@ -2,7 +2,7 @@
 The **SignalingComponentBase** provides a *Blazor* component base for the signaling technology. All signaling values that are accessed during rendering (specified inside the *Razor* template or any code that is synchronously run while rendering) leads to a subscription and triggers a re-rendering if changed. Further the component base inherits from the **SignalingContext** allowing values to diretly match the components lifetime.
 
 ## Using SignalingComponentBase in a Blazor Component
-To leverage automatic updates in a *Blazor* component, inherit from SignalingComponentBase:
+To leverage automatic updates in a *Blazor* component, inherit from **SignalingComponentBase**:
 
 ```
 // Inherit from the SignalingComponentBase
