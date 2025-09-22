@@ -309,7 +309,7 @@ public class DerivedSignalTest
     }
 
     [Fact]
-    public void TestExceptionDuringComputation()
+    public void TestExceptionDuringFirstComputation()
     {
         // arrange
         var recalculationCount = 0;
@@ -329,5 +329,41 @@ public class DerivedSignalTest
 
         signal.Set(1);
         Assert.Equal(1, recalculationCount);
+    }
+
+    [Fact]
+    public void TestExceptionDuringLaterComputation()
+    {
+        // arrange
+        var recalculationCount = 0;
+
+        var signalingContext = new SignalingContext();
+        var signal = new Signal<int>(0);
+
+        var derivedSignal = new DerivedSignal<int>(
+            signalingContext,
+            () =>
+            {
+                var value = signal.Get();
+
+                recalculationCount++;
+                if (value != 0)
+                    throw new InvalidOperationException();
+                return value;
+            });
+
+        // act & assert
+        Assert.Equal(0, derivedSignal.Get());
+        Assert.Equal(1, recalculationCount);
+
+        Assert.Throws<InvalidOperationException>(() => signal.Set(1));
+
+        Assert.Equal(0, derivedSignal.Get());
+        Assert.Equal(2, recalculationCount);
+
+        signalingContext.Dispose();
+        signal.Set(2);
+
+        Assert.Equal(2, recalculationCount);
     }
 }
