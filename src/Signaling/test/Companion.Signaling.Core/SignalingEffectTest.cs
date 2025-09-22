@@ -317,7 +317,6 @@ public class SignalingEffectTest
     {
         // arrange
         var recalculationCount = 0;
-        var value = 0;
 
         var signalingContext = new SignalingContext();
         var signal = new Signal<int>(0);
@@ -326,7 +325,7 @@ public class SignalingEffectTest
             signalingContext,
             () =>
             {
-                signal.Get();
+                var value = signal.Get();
 
                 recalculationCount++;
                 if (value != 0)
