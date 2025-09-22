@@ -29,4 +29,3 @@ All public methods have comments added that are roughly documenting their use. F
  - [UsageWithBlazor.md](../../../docs/Signaling/UsageWithBlazor.md): Everything interesting to know about the integration into *Blazor*
 
 Also a simple example can be found [here](../../Playground).
-
