@@ -33,7 +33,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="10.*-preview*" />
 
-		<PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.25">
+		<PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.39">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
