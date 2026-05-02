@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Configuration/">
+    <File Path=".editorconfig" />
+  </Folder>
+
+  <Folder Name="/Benchmark/">
+    <Project Path="Signaling/benchmark/Companion.Signaling.Benchmark/Companion.Signaling.Benchmark.csproj" />
+  </Folder>
+
+  <Folder Name="/Source/">
+    <Project Path="Signaling/src/Companion.Signaling.Blazor/Companion.Signaling.Blazor.csproj" />
+    <Project Path="Signaling/src/Companion.Signaling.Core/Companion.Signaling.Core.csproj" />
+  </Folder>
+
+  <Folder Name="/Test/">
+    <Project Path="Signaling/test/Companion.Signaling.Blazor/Companion.Signaling.Blazor.Test.csproj" />
+    <Project Path="Signaling/test/Companion.Signaling.Core/Companion.Signaling.Core.Test.csproj" />
+  </Folder>
+
+  <Project Path="Playground/Playground.csproj" />
+</Solution>
